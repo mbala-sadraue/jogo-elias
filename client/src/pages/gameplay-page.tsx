@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useLocation, useParams } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowLeft, Timer, Trophy, HelpCircle, Flame, Gift, AlertTriangle, RotateCcw } from "lucide-react";
+import { ArrowLeft, Timer, Trophy, HelpCircle, Flame, Gift, AlertTriangle, RotateCcw, BookOpen, Music } from "lucide-react";
 import { fadeIn, slideFromRight } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -9,6 +9,9 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import ChallengeCard from "@/components/challenge-card";
 import { CategoryType } from "@/components/category-card";
 import { useToast } from "@/hooks/use-toast";
+import SensualRoulette from "@/components/sensual-roulette";
+import MemoryAlbum, { Memory } from "@/components/memory-album";
+import MusicPlayer from "@/components/music-player";
 
 import { ChallengeType, GameChallenge } from "@/data/challenges";
 import { getExpandedChallenges, getRandomExpandedChallenge } from "@/data/expanded-challenges";
@@ -473,71 +476,21 @@ export default function GameplayPage() {
             initial="hidden"
             animate="visible"
           >
-            <div className="text-center text-white mb-6">
+            <div className="text-center text-white mb-4">
               <h2 className="text-2xl font-bold">
                 Escolha o seu destino
               </h2>
               <p className="text-white/80">É a vez de {currentPlayer}</p>
             </div>
             
-            {/* Roulette Wheel */}
-            <div className="flex flex-col items-center">
-              <div className="relative mb-8">
-                <div className="w-48 h-48 rounded-full border-4 border-white/30 bg-gradient-to-br from-primary/50 to-primary-dark/50 flex items-center justify-center relative overflow-hidden">
-                  {/* Spinning Indicator */}
-                  {isSpinning && (
-                    <div className="absolute inset-0 flex items-center justify-center animate-spin">
-                      <RotateCcw className="h-12 w-12 text-white/50" />
-                    </div>
-                  )}
-                  
-                  {/* Content Type Display */}
-                  <div className={`w-40 h-40 rounded-full ${getRouletteItemByType(selectedContentType).bgClass} bg-gradient-to-br flex items-center justify-center transition-all duration-300 ${isSpinning ? 'scale-90 opacity-90' : 'scale-100 opacity-100'}`}>
-                    <div className="text-center">
-                      {React.createElement(getRouletteItemByType(selectedContentType).icon, {
-                        className: "h-12 w-12 text-white mx-auto mb-2"
-                      })}
-                      <span className="block text-lg font-bold text-white">
-                        {getRouletteItemByType(selectedContentType).label}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Spin Button */}
-                <button 
-                  onClick={handleSpinRoulette}
-                  disabled={isSpinning}
-                  className={`absolute left-1/2 -translate-x-1/2 -top-5 px-4 py-2 rounded-full text-white font-medium ${isSpinning ? 'bg-gray-500/80' : 'bg-primary hover:bg-primary/90'} transition-colors`}
-                >
-                  Girar
-                </button>
-              </div>
-              
-              {/* Quick Selection Buttons */}
-              <div className="grid grid-cols-2 gap-3 w-full max-w-md mt-4">
-                {rouletteItems.map((item) => (
-                  <button
-                    key={item.type}
-                    onClick={() => handleRouletteSelect(item.type)}
-                    disabled={isSpinning}
-                    className={`py-3 px-4 rounded-xl flex items-center justify-center bg-gradient-to-br ${item.bgClass} text-white font-medium ${isSpinning ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg'} transition-all`}
-                  >
-                    {React.createElement(item.icon, { className: "h-5 w-5 mr-2" })}
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-              
-              {/* Selected Content Info */}
-              {!isSpinning && (
-                <div className="mt-8 text-center">
-                  <p className="text-white text-sm">
-                    Clique em "Girar" para deixar o destino decidir ou selecione diretamente um tipo de conteúdo.
-                  </p>
-                </div>
-              )}
-            </div>
+            {/* Sensual Roulette Component */}
+            <SensualRoulette
+              intensity={getCurrentIntensity()}
+              onTypeSelected={handleRouletteSelect}
+              isSpinning={isSpinning}
+              onSpin={handleSpinRoulette}
+              defaultType={selectedContentType}
+            />
           </motion.div>
         ) : (
           <motion.div 
@@ -588,6 +541,45 @@ export default function GameplayPage() {
           </motion.div>
         )}
       </div>
+      
+      {/* Memory Album Button */}
+      <div className="fixed left-3 bottom-28 md:left-5 md:bottom-36">
+        <Button 
+          className="p-2 md:p-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full shadow-lg text-white flex items-center justify-center hover:scale-110 transition-transform"
+          onClick={() => {
+            toast({
+              title: "Álbum de Memórias",
+              description: (
+                <div className="mt-2">
+                  <MemoryAlbum 
+                    memories={[]} 
+                    players={players.map((name, id) => ({ id, name }))}
+                    onAddMemory={(memoryData) => {
+                      // Aqui você pode implementar a lógica para salvar memórias
+                      toast({
+                        title: "Memória salva!",
+                        description: "Sua memória foi adicionada ao álbum."
+                      });
+                    }}
+                  />
+                </div>
+              ),
+              variant: "default"
+            });
+          }}
+        >
+          <BookOpen className="h-5 w-5 md:h-6 md:w-6" />
+        </Button>
+      </div>
+      
+      {/* Music Player Component */}
+      <MusicPlayer 
+        isEnabled={true} 
+        volumeLevel={0.5}
+        onVolumeChange={(level) => {
+          // Implementar se necessário
+        }}
+      />
     </motion.div>
   );
 }
