@@ -8,28 +8,30 @@ import CategoryCard, { CategoryType } from "@/components/category-card";
 import RecentGameCard from "@/components/recent-game-card";
 import StatsCard from "@/components/stats-card";
 import BottomNav from "@/components/bottom-nav";
-import { useAuth } from "@/hooks/use-auth";
+// Temporariamente desabilitado: import { useAuth } from "@/hooks/use-auth";
 import { fadeIn, staggerContainer, slideUp } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
 import { Game } from "@shared/schema";
 
 export default function HomePage() {
-  const { user } = useAuth();
+    // Dados temporários para testes
+  const user = { id: 1, username: "ELONDA" }; // Usuário temporário com o nome ELONDA
   const [_, navigate] = useLocation();
 
-  // Fetch user stats
-  const { data: stats } = useQuery<{
-    daysTogether: number;
-    gamesPlayed: number;
-    challengesCompleted: number;
-  }>({
-    queryKey: ["/api/stats"],
-  });
+  // Dados de estatísticas temporários
+  const stats = {
+    daysTogether: 365,
+    gamesPlayed: 12,
+    challengesCompleted: 84
+  };
 
-  // Fetch recent games
-  const { data: recentGames } = useQuery<Game[]>({
-    queryKey: ["/api/games/recent"],
-  });
+  // Dados de jogos recentes temporários
+  const recentGames = [{
+    id: "1",
+    title: "Jogo Picante",
+    category: "picante" as CategoryType,
+    progress: 75
+  }];
 
   const handleCategorySelect = (category: CategoryType) => {
     navigate(`/gameplay/${category}`);
