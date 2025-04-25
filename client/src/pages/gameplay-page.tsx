@@ -10,7 +10,8 @@ import ChallengeCard from "@/components/challenge-card";
 import { CategoryType } from "@/components/category-card";
 import { useToast } from "@/hooks/use-toast";
 
-import { GameChallenge, getChallengesByCategory } from "@/data/challenges";
+import { GameChallenge } from "@/data/challenges";
+import { getExpandedChallenges, getRandomExpandedChallenge } from "@/data/expanded-challenges";
 
 export default function GameplayPage() {
   const { toast } = useToast();
@@ -176,14 +177,14 @@ export default function GameplayPage() {
   // Usar a categoria correspondente ou padrão "suave"
   const category = categoryId as CategoryType || "suave";
   
-  // Filtrar desafios pelo tipo atual
-  const getChallengesByType = (type: "pergunta" | "desafio"): GameChallenge[] => {
-    const allChallenges = getChallengesByCategory(category);
-    return allChallenges.filter(challenge => challenge.type === type);
+  // Obter desafios expandidos pelo tipo atual e categoria
+  const getExpandedChallengesByType = (categoryType: CategoryType, challengeType: "pergunta" | "desafio"): GameChallenge[] => {
+    // Usar a função de desafios expandidos que possui mais conteúdo
+    return getExpandedChallenges(categoryType, challengeType);
   };
   
   // Obter desafios filtrados pelo tipo atual
-  const filteredChallenges = getChallengesByType(currentType);
+  const filteredChallenges = getExpandedChallengesByType(category, currentType);
   
   if (filteredChallenges.length === 0) {
     return (
