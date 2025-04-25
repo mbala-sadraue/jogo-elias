@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useParams } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowLeft, Users, Timer, Trophy } from "lucide-react";
+import { HelpCircle, Flame } from "lucide-react";
 import { fadeIn, slideFromRight } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -23,6 +24,11 @@ export default function GameplayPage() {
   const [completedChallenges, setCompletedChallenges] = useState(0);
   const [gameOptions, setGameOptions] = useState({ intensity: "suave" });
   const [timerActive, setTimerActive] = useState(false);
+  
+  // Estado para controlar se está mostrando a seleção de tipo
+  const [showTypeSelection, setShowTypeSelection] = useState<boolean>(true);
+  // Estado para armazenar o tipo selecionado (pergunta ou desafio)
+  const [selectedType, setSelectedType] = useState<"pergunta" | "desafio" | null>(null);
   
   useEffect(() => {
     // Carregar jogadores da sessionStorage
@@ -107,28 +113,16 @@ export default function GameplayPage() {
     // Incrementar o contador de desafios completados
     setCompletedChallenges(prev => prev + 1);
     
-    // Avançar para o próximo desafio ou finalizar o jogo
-    if (challenges && currentChallengeIndex < challenges.length - 1) {
-      setCurrentChallengeIndex(prev => prev + 1);
-      
-      // Avançar para o próximo jogador
-      setCurrentPlayerIndex(prev => (prev + 1) % players.length);
-      
-      toast({
-        title: "Desafio concluído!",
-        description: "Agora é a vez de " + players[(currentPlayerIndex + 1) % players.length]
-      });
-    } else {
-      // Jogo completado
-      toast({
-        title: "Jogo finalizado!",
-        description: "Todos os desafios foram completados com sucesso.",
-      });
-      
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
-    }
+    // Avançar para o próximo jogador
+    setCurrentPlayerIndex(prev => (prev + 1) % players.length);
+    
+    // Mostrar a seleção de tipo novamente
+    handleNextRound();
+    
+    toast({
+      title: "Desafio concluído!",
+      description: "Agora é a vez de " + players[(currentPlayerIndex + 1) % players.length]
+    });
   };
   
   const handleSkipChallenge = () => {
@@ -138,28 +132,16 @@ export default function GameplayPage() {
       setTimer(null);
     }
     
-    // Avançar para o próximo desafio ou finalizar o jogo
-    if (challenges && currentChallengeIndex < challenges.length - 1) {
-      setCurrentChallengeIndex(prev => prev + 1);
-      
-      // Avançar para o próximo jogador
-      setCurrentPlayerIndex(prev => (prev + 1) % players.length);
-      
-      toast({
-        title: "Desafio pulado",
-        description: "Agora é a vez de " + players[(currentPlayerIndex + 1) % players.length]
-      });
-    } else {
-      // Jogo completado
-      toast({
-        title: "Jogo finalizado!",
-        description: "Todos os desafios foram completados.",
-      });
-      
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
-    }
+    // Avançar para o próximo jogador
+    setCurrentPlayerIndex(prev => (prev + 1) % players.length);
+    
+    // Mostrar a seleção de tipo novamente
+    handleNextRound();
+    
+    toast({
+      title: "Desafio pulado",
+      description: "Agora é a vez de " + players[(currentPlayerIndex + 1) % players.length]
+    });
   };
   
   const handleBackClick = () => {
@@ -168,8 +150,32 @@ export default function GameplayPage() {
   
   // Usar os desafios da categoria correspondente 
   const category = categoryId as CategoryType || "suave";
+  
+  // Função para obter desafios filtrados por tipo
+  const getFilteredChallenges = (type?: "pergunta" | "desafio") => {
+    let challenges = getChallengesByCategory(category);
+    if (type) {
+      challenges = challenges.filter(challenge => challenge.type === type);
+    }
+    return challenges;
+  };
+  
   // Obter desafios e garantir que todos tenham índice
-  const challenges = getChallengesByCategory(category);
+  const challenges = selectedType ? getFilteredChallenges(selectedType) : getChallengesByCategory(category);
+  
+  // Handler para selecionar tipo
+  const handleSelectType = (type: "pergunta" | "desafio") => {
+    setSelectedType(type);
+    setShowTypeSelection(false);
+    // Resetar o índice para começar com um novo desafio do tipo selecionado
+    setCurrentChallengeIndex(0);
+  };
+  
+  // Função para resetar e mostrar a seleção de tipo novamente
+  const handleNextRound = () => {
+    setShowTypeSelection(true);
+    setSelectedType(null);
+  };
   
   if (challenges.length === 0) {
     return (
@@ -284,46 +290,94 @@ export default function GameplayPage() {
         </motion.div>
       </div>
       
-      {/* Current Card/Challenge */}
+      {/* Type Selection or Current Challenge */}
       <div className="px-4 pt-4 pb-20">
-        <motion.div 
-          className="py-4"
-          variants={slideFromRight}
-          key={currentChallenge.id}
-        >
-          <ChallengeCard
-            challenge={currentChallenge}
-            onComplete={handleCompleteChallenge}
-            onSkip={handleSkipChallenge}
-            playerNames={[currentPlayer, players[(currentPlayerIndex + 1) % players.length]]}
-          />
-          
-          {!timerActive && currentChallenge.duration && (
-            <div className="flex justify-center mt-4">
+        {showTypeSelection ? (
+          <motion.div 
+            className="py-4"
+            variants={slideFromRight}
+            initial="hidden"
+            animate="visible"
+          >
+            <div className="text-center text-white mb-6">
+              <h2 className="text-2xl font-bold">Escolha o tipo</h2>
+              <p className="text-white/80">O que você prefere?</p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
               <Button
-                variant="outline" 
-                onClick={() => toggleTimer(currentChallenge.duration)}
-                className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                variant="outline"
+                size="lg"
+                onClick={() => handleSelectType("pergunta")}
+                className="py-8 rounded-xl bg-gradient-to-br from-blue-500/80 to-blue-700/80 border-0 text-white hover:from-blue-500 hover:to-blue-700"
               >
-                <Timer className="h-4 w-4 mr-2" />
-                Iniciar timer ({currentChallenge.duration})
+                <div className="flex flex-col items-center">
+                  <HelpCircle className="h-10 w-10 mb-2" />
+                  <span className="text-lg font-bold">Pergunta</span>
+                </div>
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => handleSelectType("desafio")}
+                className="py-8 rounded-xl bg-gradient-to-br from-orange-500/80 to-orange-700/80 border-0 text-white hover:from-orange-500 hover:to-orange-700"
+              >
+                <div className="flex flex-col items-center">
+                  <Flame className="h-10 w-10 mb-2" />
+                  <span className="text-lg font-bold">Desafio</span>
+                </div>
               </Button>
             </div>
-          )}
-          
-          {timerActive && (
-            <div className="flex justify-center mt-4">
-              <Button
-                variant="outline" 
-                onClick={() => toggleTimer()}
-                className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-              >
-                <Timer className="h-4 w-4 mr-2" />
-                Parar timer
-              </Button>
+            
+            <div className="mt-6 text-center text-white/80 text-sm">
+              <p>É a vez de <span className="font-bold text-white">{currentPlayer}</span></p>
             </div>
-          )}
-        </motion.div>
+          </motion.div>
+        ) : (
+          <motion.div 
+            className="py-4"
+            variants={slideFromRight}
+            key={currentChallenge?.id || "no-challenge"}
+          >
+            {currentChallenge && (
+              <>
+                <ChallengeCard
+                  challenge={currentChallenge}
+                  onComplete={handleCompleteChallenge}
+                  onSkip={handleSkipChallenge}
+                  playerNames={[currentPlayer, players[(currentPlayerIndex + 1) % players.length]]}
+                />
+                
+                {!timerActive && currentChallenge.duration && (
+                  <div className="flex justify-center mt-4">
+                    <Button
+                      variant="outline" 
+                      onClick={() => toggleTimer(currentChallenge.duration)}
+                      className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                    >
+                      <Timer className="h-4 w-4 mr-2" />
+                      Iniciar timer ({currentChallenge.duration})
+                    </Button>
+                  </div>
+                )}
+                
+                {timerActive && (
+                  <div className="flex justify-center mt-4">
+                    <Button
+                      variant="outline" 
+                      onClick={() => toggleTimer()}
+                      className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                    >
+                      <Timer className="h-4 w-4 mr-2" />
+                      Parar timer
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+          </motion.div>
+        )}
       </div>
     </motion.div>
   );
