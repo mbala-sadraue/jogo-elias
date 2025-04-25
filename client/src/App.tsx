@@ -10,10 +10,20 @@ import StoryModePage from "@/pages/story-mode-page";
 import RoleplayModePage from "@/pages/roleplay-mode-page";
 import RouletteModePage from "@/pages/roulette-mode-page";
 import SplashScreen from "@/components/splash-screen";
+import MobileSplashScreen from "@/components/mobile-splash-screen";
 import AgeVerification from "@/components/age-verification";
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
+import useCapacitor from "@/hooks/use-capacitor";
+import { Capacitor } from "@capacitor/core";
 
+// Initialize Capacitor as early as possible
+function initializeCapacitor() {
+  // Any additional Capacitor initialization can go here
+  console.log("Capacitor initialized on platform:", Capacitor.getPlatform());
+}
+
+// Router component for all app routes
 function Router() {
   return (
     <Switch>
@@ -34,26 +44,33 @@ function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [showAgeVerification, setShowAgeVerification] = useState(false);
   const [ageVerified, setAgeVerified] = useState(false);
+  const { isNative, isAndroid, isIOS } = useCapacitor();
+  
+  // Initialize Capacitor on first render
+  useEffect(() => {
+    initializeCapacitor();
+  }, []);
 
   useEffect(() => {
-    // Verificar se a idade já foi verificada
+    // Check if age has been verified already
     const isVerified = localStorage.getItem("age-verified") === "true";
     
     if (isVerified) {
       setAgeVerified(true);
     }
     
-    // Temporizador para o splash screen
+    // Timer for splash screen
+    const splashDuration = isNative ? 2500 : 3000; // slightly shorter on native platforms
     const timer = setTimeout(() => {
       setShowSplash(false);
-      // Após o splash, mostrar verificação de idade se necessário
+      // After splash, show age verification if needed
       if (!isVerified) {
         setShowAgeVerification(true);
       }
-    }, 3000);
+    }, splashDuration);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [isNative]);
 
   const handleAgeVerification = () => {
     setShowAgeVerification(false);
@@ -61,11 +78,14 @@ function App() {
     localStorage.setItem("age-verified", "true");
   };
 
+  // Choose the appropriate splash screen based on platform
+  const SplashComponent = isNative ? MobileSplashScreen : SplashScreen;
+
   return (
     <>
       <AnimatePresence mode="wait">
         {showSplash ? (
-          <SplashScreen key="splash" />
+          <SplashComponent key="splash" />
         ) : showAgeVerification ? (
           <AgeVerification key="age-verification" onConfirm={handleAgeVerification} />
         ) : (
