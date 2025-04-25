@@ -22,11 +22,15 @@ interface PlayerPreference {
   customLimits: string;
 }
 
+// Definição dos tipos de orientação sexual
+type SexualOrientation = "hetero" | "homo" | "bi" | "outro";
+
 // Interface para o jogador
 interface Player {
   id: number;
   name: string;
   avatar: AvatarColor;
+  orientation?: SexualOrientation; // Adicionado campo para orientação sexual
   preferences?: PlayerPreference;
 }
 
@@ -122,12 +126,12 @@ export default function PlayerSetupPage() {
     setShowPreferencesModal(true);
   };
 
-  // Salva as preferências do jogador
-  const savePlayerPreferences = (preferences: PlayerPreference) => {
+  // Salva as preferências do jogador e orientação sexual
+  const savePlayerPreferences = (preferences: PlayerPreference, orientation?: SexualOrientation) => {
     if (currentPlayerPreferences) {
       setPlayers(players.map(player => 
         player.id === currentPlayerPreferences 
-          ? {...player, preferences} 
+          ? {...player, preferences, orientation} 
           : player
       ));
       setShowPreferencesModal(false);
@@ -156,7 +160,15 @@ export default function PlayerSetupPage() {
     const intensity = intensityMap[intensityLevel-1] || "suave";
     
     // Armazena os dados do jogo
-    sessionStorage.setItem("players", JSON.stringify(players.map(p => p.name)));
+    // Verifica se todos os jogadores têm orientação sexual definida
+    // Se não tiver, define como "hetero" por padrão
+    const playersWithOrientation = players.map(p => ({
+      ...p,
+      orientation: p.orientation || "hetero"
+    }));
+    
+    sessionStorage.setItem("players", JSON.stringify(playersWithOrientation.map(p => p.name)));
+    sessionStorage.setItem("fullPlayers", JSON.stringify(playersWithOrientation));
     sessionStorage.setItem("gameOptions", JSON.stringify({
       ...gameOptions,
       intensity
@@ -391,7 +403,7 @@ function PreferencesForm({
   onCancel 
 }: { 
   player: Player, 
-  onSave: (prefs: PlayerPreference) => void, 
+  onSave: (prefs: PlayerPreference, orientation?: SexualOrientation) => void, 
   onCancel: () => void 
 }) {
   const [preferences, setPreferences] = useState<PlayerPreference>(
@@ -402,6 +414,10 @@ function PreferencesForm({
       noOutdoor: false,
       customLimits: ""
     }
+  );
+  
+  const [orientation, setOrientation] = useState<SexualOrientation>(
+    player.orientation || "hetero"
   );
   
   const updatePreference = (key: keyof PlayerPreference, value: any) => {
@@ -416,6 +432,28 @@ function PreferencesForm({
       <p className="text-white/80 mb-4">
         Configure as preferências e limites para {player.name}
       </p>
+      
+      {/* Orientação Sexual */}
+      <div className="mb-6">
+        <Label className="text-white mb-2 block flex items-center">
+          <span className="mr-2">❤️</span>
+          Orientação Sexual
+        </Label>
+        <Select
+          defaultValue={orientation}
+          onValueChange={(value) => setOrientation(value as SexualOrientation)}
+        >
+          <SelectTrigger className="bg-white/20 border-white/20 text-white">
+            <SelectValue placeholder="Selecione uma orientação" />
+          </SelectTrigger>
+          <SelectContent className="bg-primary border-white/20">
+            <SelectItem value="hetero" className="text-white">Heterossexual</SelectItem>
+            <SelectItem value="homo" className="text-white">Homossexual</SelectItem>
+            <SelectItem value="bi" className="text-white">Bissexual</SelectItem>
+            <SelectItem value="outro" className="text-white">Outro</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       
       <div className="space-y-3 mb-6">
         <div className="flex items-center justify-between">
@@ -484,7 +522,7 @@ function PreferencesForm({
           Cancelar
         </Button>
         <Button
-          onClick={() => onSave(preferences)}
+          onClick={() => onSave(preferences, orientation)}
           className="flex-1 bg-white text-primary hover:bg-white/90"
         >
           Salvar Preferências
