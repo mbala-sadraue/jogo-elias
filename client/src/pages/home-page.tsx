@@ -1,17 +1,21 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { Shuffle, Users, UserPlus, ChevronRight, Settings } from "lucide-react";
+import { Shuffle, Users, UserPlus, ChevronRight, Settings, Smartphone } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import CategoryCard, { CategoryType } from "@/components/category-card";
 import { fadeIn, staggerContainer, slideUp } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import DeviceInfo from "@/components/device-info";
+import useCapacitor from "@/hooks/use-capacitor";
 
 export default function HomePage() {
   const [_, navigate] = useLocation();
   const [players, setPlayers] = useState<string[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState<string>("ELONDA");
+  const [showDeviceInfo, setShowDeviceInfo] = useState(false);
+  const { isNative } = useCapacitor();
   
   useEffect(() => {
     // Carrega os jogadores da sessionStorage
@@ -42,6 +46,10 @@ export default function HomePage() {
     setPlayers(shuffled);
     setCurrentPlayer(shuffled[0]);
   };
+  
+  const toggleDeviceInfo = () => {
+    setShowDeviceInfo(!showDeviceInfo);
+  };
 
   return (
     <motion.div
@@ -52,6 +60,15 @@ export default function HomePage() {
       variants={fadeIn}
     >
       <div className="relative">
+        {/* Device Info Modal */}
+        {showDeviceInfo && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center p-6 bg-black/50">
+            <div className="w-full max-w-sm">
+              <DeviceInfo onClose={toggleDeviceInfo} />
+            </div>
+          </div>
+        )}
+        
         {/* Header */}
         <motion.div 
           className="p-6 rounded-b-3xl"
@@ -60,16 +77,36 @@ export default function HomePage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="font-bold text-white text-2xl">ELONDA</h1>
-              <p className="text-white/80 text-sm">Jogo para amigos</p>
+              <div className="flex items-center">
+                <p className="text-white/80 text-sm">Jogo para amigos</p>
+                {isNative && (
+                  <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full ml-2 flex items-center">
+                    <Smartphone className="h-3 w-3 mr-1" />
+                    App
+                  </span>
+                )}
+              </div>
             </div>
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate("/")}
-              size="icon" 
-              className="p-2 rounded-full bg-white/20 text-white"
-            >
-              <Settings className="h-5 w-5" />
-            </Button>
+            <div className="flex space-x-2">
+              {isNative && (
+                <Button 
+                  variant="ghost" 
+                  onClick={toggleDeviceInfo}
+                  size="icon" 
+                  className="p-2 rounded-full bg-white/20 text-white"
+                >
+                  <Smartphone className="h-5 w-5" />
+                </Button>
+              )}
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate("/")}
+                size="icon" 
+                className="p-2 rounded-full bg-white/20 text-white"
+              >
+                <Settings className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
           
           {/* Player Turn Section */}
