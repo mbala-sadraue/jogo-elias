@@ -1,49 +1,50 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
-import { Settings, Heart } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Shuffle, Users, UserPlus, ChevronRight, Settings } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import CategoryCard, { CategoryType } from "@/components/category-card";
-import RecentGameCard from "@/components/recent-game-card";
-import StatsCard from "@/components/stats-card";
-import BottomNav from "@/components/bottom-nav";
-// Temporariamente desabilitado: import { useAuth } from "@/hooks/use-auth";
 import { fadeIn, staggerContainer, slideUp } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
-import { Game } from "@shared/schema";
 
 export default function HomePage() {
-    // Dados temporários para testes
-  const user = { id: 1, username: "ELONDA" }; // Usuário temporário com o nome ELONDA
   const [_, navigate] = useLocation();
-
-  // Dados de estatísticas temporários
-  const stats = {
-    daysTogether: 365,
-    gamesPlayed: 12,
-    challengesCompleted: 84
-  };
-
-  // Dados de jogos recentes temporários
-  const recentGames = [{
-    id: "1",
-    title: "Jogo Picante",
-    category: "picante" as CategoryType,
-    progress: 75
-  }];
+  const [players, setPlayers] = useState<string[]>([]);
+  const [currentPlayer, setCurrentPlayer] = useState<string>("ELONDA");
+  
+  useEffect(() => {
+    // Carrega os jogadores da sessionStorage
+    const storedPlayers = sessionStorage.getItem("players");
+    if (storedPlayers) {
+      const parsedPlayers = JSON.parse(storedPlayers);
+      setPlayers(parsedPlayers);
+      setCurrentPlayer(parsedPlayers[0] || "ELONDA");
+    } else {
+      // Se não houver jogadores configurados, redireciona para a tela de configuração
+      navigate("/");
+    }
+  }, [navigate]);
 
   const handleCategorySelect = (category: CategoryType) => {
     navigate(`/gameplay/${category}`);
   };
+  
+  const nextPlayer = () => {
+    const currentIndex = players.indexOf(currentPlayer);
+    const nextIndex = (currentIndex + 1) % players.length;
+    setCurrentPlayer(players[nextIndex]);
+  };
 
-  const handleContinueGame = (gameId: string) => {
-    navigate(`/gameplay/${gameId}`);
+  const shufflePlayers = () => {
+    const shuffled = [...players].sort(() => Math.random() - 0.5);
+    sessionStorage.setItem("players", JSON.stringify(shuffled));
+    setPlayers(shuffled);
+    setCurrentPlayer(shuffled[0]);
   };
 
   return (
     <motion.div
-      className="min-h-screen bg-light dark:bg-dark pb-20"
+      className="min-h-screen bg-gradient-to-b from-primary to-primary-dark pb-20"
       initial="hidden"
       animate="visible"
       exit="exit"
@@ -52,76 +53,90 @@ export default function HomePage() {
       <div className="relative">
         {/* Header */}
         <motion.div 
-          className="bg-primary p-4 rounded-b-3xl"
+          className="p-6 rounded-b-3xl"
           variants={slideUp}
         >
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="font-bold text-white text-xl">Olá, {user?.username}!</h1>
-              <p className="text-white/80 text-sm">O que vamos jogar hoje?</p>
+              <h1 className="font-bold text-white text-2xl">ELONDA</h1>
+              <p className="text-white/80 text-sm">Jogo para amigos</p>
             </div>
-            <div className="flex items-center">
-              <div className="flex -space-x-2">
-                {/* Avatar 1 - User */}
-                <Avatar className="w-10 h-10 border-2 border-white">
-                  <AvatarFallback className="bg-primary-light text-white">
-                    {user?.username.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                
-                {/* Avatar 2 - Partner (if exists) */}
-                <Avatar className="w-10 h-10 border-2 border-white">
-                  <AvatarFallback className="bg-secondary-light text-white">
-                    <Heart className="h-5 w-5" />
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-              <Button variant="ghost" size="icon" className="ml-4 p-2 rounded-full bg-white/20 text-white">
-                <Settings className="h-5 w-5" />
-              </Button>
-            </div>
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate("/")}
+              size="icon" 
+              className="p-2 rounded-full bg-white/20 text-white"
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
           </div>
           
-          {/* Stats cards */}
+          {/* Player Turn Section */}
           <motion.div 
-            className="mt-6 pb-2 overflow-x-auto no-scrollbar flex space-x-4 px-1"
-            variants={staggerContainer}
+            className="mt-8 bg-white/10 rounded-xl p-4 backdrop-blur-sm"
+            variants={slideUp}
           >
-            <StatsCard 
-              title="Dias juntos" 
-              value={stats?.daysTogether || 0} 
-            />
-            <StatsCard 
-              title="Jogos" 
-              value={stats?.gamesPlayed || 0} 
-            />
-            <StatsCard 
-              title="Desafios" 
-              value={stats?.challengesCompleted || 0} 
-            />
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-white text-lg font-semibold flex items-center">
+                <Users className="mr-2 h-5 w-5" />
+                Turno de
+              </h2>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="p-2 rounded-full bg-white/20 text-white"
+                onClick={shufflePlayers}
+              >
+                <Shuffle className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <div className="flex items-center bg-white/20 p-3 rounded-lg">
+              <Avatar className="w-12 h-12 border-2 border-white">
+                <AvatarFallback className="bg-primary-light text-white font-bold text-lg">
+                  {currentPlayer.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="ml-3 flex-1">
+                <h3 className="text-white font-bold text-xl">{currentPlayer}</h3>
+                <p className="text-white/70 text-xs">É a sua vez de jogar</p>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="p-2 rounded-full bg-white/20 text-white"
+                onClick={nextPlayer}
+              >
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+            </div>
+            
+            <div className="mt-3 flex -space-x-2 overflow-hidden">
+              {players.map((player, index) => (
+                <Avatar key={index} className="inline-block w-8 h-8 border-2 border-white">
+                  <AvatarFallback 
+                    className={`${player === currentPlayer ? 'bg-secondary' : 'bg-primary-light'} text-white font-semibold`}
+                  >
+                    {player.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              ))}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="w-8 h-8 rounded-full bg-white/20 text-white ml-2 border-2 border-white"
+                onClick={() => navigate("/")}
+              >
+                <UserPlus className="h-4 w-4" />
+              </Button>
+            </div>
           </motion.div>
         </motion.div>
         
-        {/* Recent & Continue */}
-        <div className="px-4 py-6">
-          {recentGames && recentGames.length > 0 && (
-            <motion.div variants={slideUp}>
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="font-medium text-lg text-dark dark:text-light">Continue de onde parou</h2>
-                <button className="text-primary text-sm font-medium">Ver todos</button>
-              </div>
-              
-              {/* Recent game card */}
-              <RecentGameCard 
-                game={recentGames[0]} 
-                onContinue={handleContinueGame} 
-              />
-            </motion.div>
-          )}
-          
-          {/* Category selection */}
+        {/* Category selection */}
+        <div className="px-6 py-6">
           <motion.h2 
-            className="font-medium text-lg text-dark dark:text-light mb-4"
+            className="font-bold text-xl text-white mb-4"
             variants={slideUp}
           >
             Escolha uma categoria
@@ -158,9 +173,6 @@ export default function HomePage() {
           </motion.div>
         </div>
       </div>
-      
-      {/* Bottom Navigation */}
-      <BottomNav />
     </motion.div>
   );
 }
