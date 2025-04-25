@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 240 10% 3.9%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    
+    --primary: 332 100% 65%;
+    --primary-foreground: 0 0% 98%;
+    
+    --secondary: 15 100% 75%;
+    --secondary-foreground: 240 5.9% 10%;
+    
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    
+    --chart-1: 332 100% 65%;
+    --chart-2: 15 100% 75%;
+    --chart-3: 191 53% 52%;
+    --chart-4: 317 60% 32%;
+    --chart-5: 240 5.9% 50%;
+    
+    --radius: 0.5rem;
+    
+    /* Game category colors */
+    --suave: 191 53% 52%;
+    --picante: 15 100% 75%;
+    --selvagem: 332 100% 65%;
+    --extremo: 317 60% 32%;
+  }
+  
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    
+    --card: 240 10% 12%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 240 10% 12%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 332 100% 65%;
+    --primary-foreground: 0 0% 98%;
+    
+    --secondary: 15 100% 75%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-inter antialiased bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    overscroll-behavior: none;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-poppins;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .bg-suave {
+    background-color: hsl(var(--suave));
+  }
+  
+  .bg-picante {
+    background-color: hsl(var(--picante));
+  }
+  
+  .bg-selvagem {
+    background-color: hsl(var(--selvagem));
+  }
+  
+  .bg-extremo {
+    background-color: hsl(var(--extremo));
+  }
+  
+  .text-suave {
+    color: hsl(var(--suave));
+  }
+  
+  .text-picante {
+    color: hsl(var(--picante));
+  }
+  
+  .text-selvagem {
+    color: hsl(var(--selvagem));
+  }
+  
+  .text-extremo {
+    color: hsl(var(--extremo));
+  }
+  
+  .bg-suave\/20 {
+    background-color: hsl(var(--suave) / 0.2);
+  }
+  
+  .bg-picante\/20 {
+    background-color: hsl(var(--picante) / 0.2);
+  }
+  
+  .bg-selvagem\/20 {
+    background-color: hsl(var(--selvagem) / 0.2);
+  }
+  
+  .bg-extremo\/20 {
+    background-color: hsl(var(--extremo) / 0.2);
+  }
+}
