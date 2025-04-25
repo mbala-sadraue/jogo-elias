@@ -1,0 +1,91 @@
+ FUNCIONALIDADES DOS BOTÕES E ELEMENTOS
+1️⃣ Nível de Intensidade (Suave, Picante, Selvagem, Extremo)
+
+    O usuário pode selecionar apenas um nível por vez.
+
+    O botão selecionado deve mudar de cor e destacar a opção ativa.
+
+    O nível selecionado influencia o tipo de perguntas e desafios disponíveis.
+
+    (🆕 Inovação): Implementar um modo dinâmico, onde o jogo aumenta automaticamente a intensidade com o tempo.
+
+2️⃣ Tipo de Relacionamento (Hétero, Lésbico, Gay, Outro)
+
+    Apenas uma opção pode ser selecionada por vez.
+
+    O tipo de relacionamento personaliza os desafios e perguntas para garantir que sejam relevantes.
+
+    Se "Outro" for escolhido, o jogador pode personalizar manualmente as perguntas e desafios.
+
+3️⃣ Jogadores (+ e - para adicionar/remover)
+
+    O usuário pode adicionar até 8 jogadores e remover até restar pelo menos 2.
+
+    Cada jogador pode editar seu nome e avatar.
+
+    (🆕 Inovação): Incluir perfis personalizados, onde cada jogador define seus limites e preferências antes de começar (ex: "Não quero desafios que envolvam comida").
+
+4️⃣ Opções de Jogo
+
+    Modo no Escuro: Ativado, os desafios são gerados aleatoriamente sem aviso prévio.
+
+    Modo Competitivo: Se ativado, os jogadores recebem prendas sensuais se desistirem de um desafio.
+
+    Temporizador: Se ativado, cada jogador tem 30 segundos para responder antes de perder a vez.
+
+    (🆕 Inovação): Modo Desafio em Dupla – O jogo pode selecionar dois jogadores aleatoriamente para realizar um desafio juntos.
+
+5️⃣ Escolha de "Pergunta ou Desafio"
+
+    No início de cada rodada, o jogador escolhe entre "Pergunta" ou "Desafio".
+
+    Se escolher "Pergunta", o sistema exibe uma pergunta aleatória baseada no nível selecionado.
+
+    Se escolher "Desafio", o sistema exibe um desafio condizente com a intensidade escolhida.
+
+    (🆕 Inovação): Modo "Pergunta Proibida" – Se ativado, algumas perguntas possuem uma opção secreta extrema que o jogador pode desbloquear.
+
+6️⃣ Modo Bônus: "Roleta Sensual"
+
+    (🆕 Inovação): Adicionar um modo onde, ao invés de escolher pergunta ou desafio, o jogador gira uma roleta interativa que pode sortear:
+
+        Pergunta
+
+        Desafio
+
+        Prêmio surpresa (ex: o jogador escolhe qualquer desafio para alguém)
+
+        Penalidade (ex: remover uma peça de roupa)
+
+7️⃣ Botão "Iniciar Jogo"
+
+    Só deve ser ativado quando todas as condições mínimas forem atendidas (pelo menos 2 jogadores e 1 nível de intensidade selecionado).
+
+    Ao clicar, leva os jogadores para a primeira rodada do jogo, carregando os desafios conforme as escolhas feitas.
+
+    (🆕 Inovação): Criar uma trilha sonora sensual de fundo, ajustável, para ambientar o jogo.
+
+⚙️ INOVAÇÕES EXTRAS PARA EXPERIÊNCIA IMERSIVA
+
+💡 Integração de Áudio: Algumas perguntas/desafios podem incluir áudios sensuais gravados para guiar os jogadores.
+
+📱 Modo Personalizável: Permitir que os jogadores criem suas próprias perguntas e desafios antes do jogo começar.
+
+📷 Modo "Desafio Visual": Algumas consequências podem incluir tirar uma foto ou vídeo para provar que o desafio foi cumprido.
+
+🕶️ Modo VR (Realidade Virtual) (Futuro Update): Implementar um modo onde os jogadores podem experimentar desafios guiados em realidade virtual para maior imersão.
+⚙️ TECNOLOGIAS SUGERIDAS PARA IMPLEMENTAÇÃO
+
+    Frontend: React (com Tailwind CSS para design moderno)
+
+    Backend: Node.js (com banco de dados para salvar configurações personalizadas)
+
+    Estado Global: Redux ou Context API para gerenciar escolhas do usuário
+
+    Animações: Framer Motion para tornar a experiência mais fluida e interativa
+
+    Áudio & Roleta: Uso de Web Audio API e Canvas para animações de sorteio
+
+Esse prompt agora inclui recursos inovadores e diferenciados, tornando o jogo único e memorável. 🚀🔥
+
+Se precisar de ajustes ou quiser um código inicial, me avise! 😉

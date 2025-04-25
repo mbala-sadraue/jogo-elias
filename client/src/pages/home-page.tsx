@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import CategoryCard, { CategoryType } from "@/components/category-card";
 import { fadeIn, staggerContainer, slideUp } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 export default function HomePage() {
   const [_, navigate] = useLocation();
