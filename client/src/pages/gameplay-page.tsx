@@ -17,7 +17,6 @@ export default function GameplayPage() {
   const { toast } = useToast();
   const { categoryId } = useParams();
   const [_, navigate] = useLocation();
-  const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
   const [timer, setTimer] = useState<number | null>(null);
   const [players, setPlayers] = useState<string[]>([]);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
@@ -29,6 +28,11 @@ export default function GameplayPage() {
   const [showingType, setShowingType] = useState(true);
   // Estado para armazenar o tipo atual (pergunta ou desafio)
   const [currentType, setCurrentType] = useState<"pergunta" | "desafio">("pergunta");
+  // Estado para armazenar o desafio atual
+  const [currentChallenge, setCurrentChallenge] = useState<GameChallenge | null>(null);
+  
+  // Usar a categoria correspondente ou padrão "suave"
+  const category = categoryId as CategoryType || "suave";
   
   // Carregar jogadores da sessionStorage
   useEffect(() => {
@@ -122,11 +126,12 @@ export default function GameplayPage() {
     
     // Após 1.5 segundo, mostrar o desafio
     setTimeout(() => {
+      // Seleciona um desafio aleatório depois que o tipo for mostrado
+      const randomChallenge = getRandomExpandedChallenge(category, newType);
+      // Armazena o desafio selecionado no estado
+      setCurrentChallenge(randomChallenge);
       setShowingType(false);
     }, 1500);
-    
-    // Resetar o índice do desafio
-    setCurrentChallengeIndex(0);
   };
   
   const handleCompleteChallenge = () => {
@@ -174,9 +179,6 @@ export default function GameplayPage() {
     navigate('/home');
   };
   
-  // Usar a categoria correspondente ou padrão "suave"
-  const category = categoryId as CategoryType || "suave";
-  
   // Obter desafios expandidos pelo tipo atual e categoria
   const getExpandedChallengesByType = (categoryType: CategoryType, challengeType: "pergunta" | "desafio"): GameChallenge[] => {
     // Usar a função de desafios expandidos que possui mais conteúdo
@@ -203,7 +205,6 @@ export default function GameplayPage() {
     );
   }
   
-  const currentChallenge = filteredChallenges[currentChallengeIndex];
   const currentPlayer = players[currentPlayerIndex] || "Jogador";
   const totalChallenges = filteredChallenges.length;
   const progress = Math.round((completedChallenges / 20) * 100); // Limitando a 20 desafios para barra de progresso
