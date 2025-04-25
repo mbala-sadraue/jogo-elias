@@ -4,17 +4,10 @@ import { Button } from "@/components/ui/button";
 import { rotateIn } from "@/lib/animations";
 import { Timer, Sparkles, Heart, Thermometer, Flame, HelpCircle, Gift, AlertTriangle, RotateCcw } from "lucide-react";
 import { CategoryType } from "./category-card";
+import { GameChallenge } from "@/data/challenges";
 
 interface ChallengeCardProps {
-  challenge: {
-    id: string;
-    title: string;
-    description: string;
-    type: string;
-    duration: string;
-    index: number;
-    category: CategoryType;
-  };
+  challenge: GameChallenge;
   onComplete: () => void;
   onSkip: () => void;
   playerNames?: string[];
@@ -55,22 +48,22 @@ const typeConfig = {
 const categoryConfig = {
   "suave": {
     icon: Heart,
-    bgClass: "from-blue-400 to-blue-500",
+    bgClass: "bg-gradient-suave",
     buttonClass: "bg-blue-500 hover:bg-blue-600"
   },
   "picante": {
     icon: Thermometer,
-    bgClass: "from-orange-400 to-orange-500",
+    bgClass: "bg-gradient-picante",
     buttonClass: "bg-orange-500 hover:bg-orange-600"
   },
   "selvagem": {
     icon: Flame,
-    bgClass: "from-red-400 to-red-500",
+    bgClass: "bg-gradient-selvagem",
     buttonClass: "bg-red-500 hover:bg-red-600"
   },
   "extremo": {
     icon: Sparkles,
-    bgClass: "from-purple-400 to-purple-500",
+    bgClass: "bg-gradient-extremo",
     buttonClass: "bg-purple-500 hover:bg-purple-600"
   }
 };

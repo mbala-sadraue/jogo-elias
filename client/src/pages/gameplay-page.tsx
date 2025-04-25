@@ -168,7 +168,8 @@ export default function GameplayPage() {
   
   // Usar os desafios da categoria correspondente 
   const category = categoryId as CategoryType || "suave";
-  const challenges = ALL_CHALLENGES[category] || [];
+  // Obter desafios e garantir que todos tenham índice
+  const challenges = getChallengesByCategory(category);
   
   if (challenges.length === 0) {
     return (
@@ -194,7 +195,7 @@ export default function GameplayPage() {
   
   return (
     <motion.div
-      className={`min-h-screen bg-gradient-to-b from-${category} to-${category}-dark`}
+      className={`min-h-screen bg-gradient-${category}`}
       initial="hidden"
       animate="visible"
       exit="exit"

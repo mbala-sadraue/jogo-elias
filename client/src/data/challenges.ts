@@ -303,6 +303,250 @@ export const suaveChallenges: GameChallenge[] = [
     duration: "3 min",
     category: "suave"
   },
+  
+  // Adicionando mais 15 perguntas suaves
+  {
+    id: "s36",
+    title: "Sonho de Viagem",
+    description: "Qual é o lugar que você sonha em visitar e por quê?",
+    type: "pergunta",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s37",
+    title: "Dia Perfeito",
+    description: "Descreva como seria um dia perfeito para você, do início ao fim.",
+    type: "pergunta",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s38",
+    title: "Livro Favorito",
+    description: "Qual é seu livro favorito e por que ele tocou você?",
+    type: "pergunta",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s39",
+    title: "Temporada Preferida",
+    description: "Qual sua estação do ano favorita e que memórias você associa a ela?",
+    type: "pergunta",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s40",
+    title: "Se Fosse Animal",
+    description: "Se você fosse um animal, qual seria e por quê?",
+    type: "pergunta",
+    duration: "1 min",
+    category: "suave"
+  },
+  {
+    id: "s41",
+    title: "Talentos Desejados",
+    description: "Qual habilidade ou talento você gostaria de ter?",
+    type: "pergunta",
+    duration: "1 min",
+    category: "suave"
+  },
+  {
+    id: "s42",
+    title: "Personagem Fictício",
+    description: "Com qual personagem de filme ou livro você mais se identifica?",
+    type: "pergunta",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s43",
+    title: "Refeição Perfeita",
+    description: "Qual seria sua refeição perfeita do início ao fim?",
+    type: "pergunta",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s44",
+    title: "Conselho para Jovens",
+    description: "Que conselho você daria para alguém 10 anos mais jovem que você?",
+    type: "pergunta",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s45",
+    title: "Para o Futuro",
+    description: "Que mensagem você deixaria para seus futuros filhos ou netos?",
+    type: "pergunta",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s46",
+    title: "Presente Ideal",
+    description: "Qual seria o presente ideal para você receber?",
+    type: "pergunta",
+    duration: "1 min",
+    category: "suave"
+  },
+  {
+    id: "s47",
+    title: "Cidade dos Sonhos",
+    description: "Em qual cidade do mundo você gostaria de morar?",
+    type: "pergunta",
+    duration: "1 min",
+    category: "suave"
+  },
+  {
+    id: "s48",
+    title: "Metas de Vida",
+    description: "Quais são suas três principais metas de vida?",
+    type: "pergunta",
+    duration: "2 min", 
+    category: "suave"
+  },
+  {
+    id: "s49",
+    title: "Momento Especial",
+    description: "Qual foi o momento mais especial da sua vida até agora?",
+    type: "pergunta",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s50",
+    title: "Melhor Conselho",
+    description: "Qual é o melhor conselho que você já recebeu?",
+    type: "pergunta",
+    duration: "2 min",
+    category: "suave"
+  },
+  
+  // Adicionando mais 15 desafios suaves
+  {
+    id: "s51",
+    title: "Dança Engraçada",
+    description: "Invente uma dança engraçada e ensine para os outros jogadores.",
+    type: "desafio",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s52",
+    title: "Declaração Criativa",
+    description: "Faça uma declaração criativa para outro jogador sem usar as palavras 'eu', 'você' e 'amor'.",
+    type: "desafio",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s53",
+    title: "Imitação de Voz",
+    description: "Tente imitar a voz de um personagem de desenho animado.",
+    type: "desafio",
+    duration: "1 min",
+    category: "suave"
+  },
+  {
+    id: "s54",
+    title: "Adivinhação",
+    description: "Descreva um objeto sem dizer o nome dele e deixe os outros adivinharem.",
+    type: "desafio",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s55",
+    title: "Gargalhada Contagiante",
+    description: "Tente fazer outro jogador rir sem tocar nele(a).",
+    type: "desafio",
+    duration: "1 min",
+    category: "suave"
+  },
+  {
+    id: "s56",
+    title: "História Colaborativa",
+    description: "Comece uma história com uma frase, e cada jogador adiciona uma frase.",
+    type: "desafio",
+    duration: "3 min",
+    category: "suave"
+  },
+  {
+    id: "s57",
+    title: "Música com Gestos",
+    description: "Cante uma música infantil fazendo gestos engraçados.",
+    type: "desafio",
+    duration: "1 min",
+    category: "suave"
+  },
+  {
+    id: "s58",
+    title: "Feijoada de Gestos",
+    description: "Todos devem fazer um gesto, e você tem que imitar todos em sequência.",
+    type: "desafio",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s59",
+    title: "Telefone sem Fio",
+    description: "Inicie um telefone sem fio com uma frase complexa.",
+    type: "desafio",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s60",
+    title: "Melodia do Riso",
+    description: "Cante uma música conhecida usando apenas 'la la la'.",
+    type: "desafio",
+    duration: "1 min",
+    category: "suave"
+  },
+  {
+    id: "s61",
+    title: "Poesia Instantânea",
+    description: "Crie um verso poético sobre cada pessoa presente no jogo.",
+    type: "desafio",
+    duration: "3 min",
+    category: "suave"
+  },
+  {
+    id: "s62",
+    title: "Massagem em Círculo",
+    description: "Faça uma breve massagem nos ombros da pessoa à sua direita.",
+    type: "desafio",
+    duration: "1 min",
+    category: "suave"
+  },
+  {
+    id: "s63",
+    title: "Talento Inesperado",
+    description: "Demonstre um talento inesperado que você tenha.",
+    type: "desafio",
+    duration: "2 min",
+    category: "suave"
+  },
+  {
+    id: "s64",
+    title: "Andar Diferente",
+    description: "Imite três formas diferentes de andar (como modelo, idoso, cowboy).",
+    type: "desafio",
+    duration: "1 min",
+    category: "suave"
+  },
+  {
+    id: "s65",
+    title: "Cosquinha Mútua",
+    description: "Faça cosquinha em outro jogador por 15 segundos.",
+    type: "desafio",
+    duration: "30 seg",
+    category: "suave"
+  },
 ];
 
 // ----- DESAFIOS PICANTES -----
