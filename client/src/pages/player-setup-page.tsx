@@ -82,7 +82,7 @@ export default function PlayerSetupPage() {
 
   // Função para adicionar um jogador
   const addPlayer = () => {
-    if (players.length < 6) {
+    if (players.length < 8) {
       const newPlayerId = Math.max(...players.map(p => p.id)) + 1;
       const unusedColors = AVATAR_COLORS.filter(color => 
         !players.map(p => p.avatar).includes(color)
@@ -198,7 +198,7 @@ export default function PlayerSetupPage() {
               Jogadores
             </span>
             <span className="text-sm font-normal">
-              {players.length} / 6
+              {players.length} / 8
             </span>
           </h2>
           
@@ -251,7 +251,7 @@ export default function PlayerSetupPage() {
             ))}
           </motion.div>
           
-          {players.length < 6 && (
+          {players.length < 8 && (
             <Button
               variant="outline"
               className="mt-4 w-full text-white border-white/20 hover:bg-white/20"
