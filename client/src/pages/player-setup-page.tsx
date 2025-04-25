@@ -7,32 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fadeIn, slideUp, staggerContainer } from "@/lib/animations";
 import { useToast } from "@/hooks/use-toast";
 
-// Define um tipo para os avatares
-type AvatarColor = "red" | "blue" | "green" | "purple" | "orange" | "pink" | "teal" | "amber";
-
-// Interface para as preferências do jogador
-interface PlayerPreference {
-  noAlcohol: boolean;
-  noFood: boolean;
-  noClothing: boolean;
-  noOutdoor: boolean;
-  customLimits: string;
-}
-
-// Definição dos tipos de orientação sexual
-type SexualOrientation = "hetero" | "homo" | "bi" | "outro";
-
-// Interface para o jogador
-interface Player {
-  id: number;
-  name: string;
-  avatar: AvatarColor;
-  orientation?: SexualOrientation; // Adicionado campo para orientação sexual
-  preferences?: PlayerPreference;
-}
+// Importamos os tipos do jogador definidos em types/player.ts
+import { Player, PlayerPreference, AvatarColor, SexualOrientation } from "@/types/player";
 
 // Cores disponíveis para avatares
 const AVATAR_COLORS: AvatarColor[] = ["red", "blue", "green", "purple", "orange", "pink", "teal", "amber"];

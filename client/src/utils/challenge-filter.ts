@@ -1,8 +1,7 @@
-import { SexualOrientation } from "@/types/player";
 import { CategoryType } from "@/components/category-card";
 import { GameChallenge } from "@/data/challenges";
+import { SexualOrientation } from "@/types/player";
 
-// Interface para jogador simplificada
 interface SimplePlayer {
   id: string;
   name: string;
@@ -21,120 +20,121 @@ export function filterChallengesByOrientation(
   players: SimplePlayer[],
   category: CategoryType
 ): GameChallenge[] {
-  // Se não tiver jogadores com orientação definida, retorna os desafios originais
-  if (!players || players.length === 0) {
+  // Se há apenas jogadores heterossexuais, retorna os desafios originais
+  if (players.every(p => p.orientation === "hetero")) {
     return challenges;
   }
-
-  const orientations = players.map(p => p.orientation);
   
-  // Se todos os jogadores são heterossexuais
-  const allHetero = orientations.every(o => o === 'hetero');
+  // Se há apenas jogadores homossexuais, adapta os textos
+  if (players.every(p => p.orientation === "homo")) {
+    return challenges.map(challenge => ({
+      ...challenge,
+      description: adaptTextForHomo(challenge.description, players)
+    }));
+  }
   
-  // Se todos os jogadores são homossexuais
-  const allHomo = orientations.every(o => o === 'homo');
-  
-  // Se existe pelo menos um bissexual ou outro
-  const hasBiOrOther = orientations.some(o => o === 'bi' || o === 'outro');
-
-  return challenges.map(challenge => {
-    // Cria uma cópia do desafio que pode ser modificada
-    let adaptedChallenge = { ...challenge };
-    
-    // Adaptação do texto baseado nas orientações sexuais
-    if (allHetero) {
-      // Mantém o desafio original, pois provavelmente já é voltado para heterossexuais
-      adaptedChallenge.description = adaptTextForHetero(challenge.description);
-    } else if (allHomo) {
-      // Adapta para contexto homossexual
-      adaptedChallenge.description = adaptTextForHomo(challenge.description, players);
-    } else if (hasBiOrOther) {
-      // Adapta para contexto misto
-      adaptedChallenge.description = adaptTextForMixed(challenge.description);
-    }
-    
-    return adaptedChallenge;
-  });
+  // Para mix de orientações (bi ou outro), adapta para ser mais inclusivo
+  return challenges.map(challenge => ({
+    ...challenge,
+    description: adaptTextForMixed(challenge.description)
+  }));
 }
 
 /**
  * Adapta o texto para um contexto heterossexual (homem/mulher)
  */
 function adaptTextForHetero(text: string): string {
-  // Para contexto heterossexual, o texto original geralmente já é adequado
-  // mas podemos fazer ajustes se necessário
-  return text
-    .replace(/parceiro\\(a\\)/g, "parceiro(a)")
-    .replace(/seu parceiro/g, "seu parceiro(a)")
-    .replace(/sua parceira/g, "seu parceiro(a)");
+  // Textos para contexto heterossexual geralmente já estão adaptados por padrão
+  return text;
 }
 
 /**
  * Adapta o texto para um contexto homossexual
  */
 function adaptTextForHomo(text: string, players: SimplePlayer[]): string {
-  // Verifica se são homens ou mulheres (simplificado - para uma implementação real 
-  // precisaríamos de um campo de gênero nos jogadores)
-  const hasMoreMales = false; // Placeholder, em um app real teríamos que determinar isso
-  
-  if (hasMoreMales) {
-    return text
-      .replace(/parceiro\\(a\\)/g, "parceiro")
-      .replace(/seu parceiro\\(a\\)/g, "seu parceiro")
-      .replace(/pessoa do sexo oposto/g, "outro jogador")
-      .replace(/sua parceira/g, "seu parceiro");
-  } else {
-    return text
-      .replace(/parceiro\\(a\\)/g, "parceira")
-      .replace(/seu parceiro\\(a\\)/g, "sua parceira")
-      .replace(/pessoa do sexo oposto/g, "outra jogadora")
-      .replace(/seu parceiro/g, "sua parceira");
-  }
+  // Substitui referências a "pessoa do sexo oposto" ou similares
+  let adaptedText = text
+    .replace(/do sexo oposto/gi, "do mesmo sexo")
+    .replace(/pessoa do outro sexo/gi, "pessoa do mesmo sexo")
+    .replace(/parceiro\(a\)/gi, "parceiro")
+    .replace(/parceira/gi, "parceiro")
+    .replace(/pessoa que você escolher/gi, "pessoa que você escolher");
+    
+  return adaptedText;
 }
 
 /**
  * Adapta o texto para um contexto misto (bissexual ou outros)
  */
 function adaptTextForMixed(text: string): string {
-  return text
-    .replace(/pessoa do sexo oposto/g, "pessoa de sua preferência")
-    .replace(/parceiro\\(a\\)/g, "parceiro(a) de sua preferência")
-    .replace(/seu parceiro/g, "seu parceiro(a) de sua preferência");
+  // Torna o texto mais neutro em termos de gênero e orientação
+  let adaptedText = text
+    .replace(/do sexo oposto/gi, "de sua escolha")
+    .replace(/pessoa do outro sexo/gi, "pessoa de sua escolha")
+    .replace(/parceiro\(a\)/gi, "parceiro(a)")
+    .replace(/pessoa que você escolher/gi, "pessoa que você escolher");
+    
+  return adaptedText;
 }
 
 /**
  * Seleciona jogadores para interagir com base nas orientações sexuais
  */
 export function selectPlayersForInteraction(
-  players: SimplePlayer[],
-  currentPlayerIndex: number
+  player: SimplePlayer,
+  allPlayers: SimplePlayer[],
+  count: number = 1
 ): SimplePlayer[] {
-  if (players.length <= 1) return [];
+  let compatiblePlayers: SimplePlayer[] = [];
   
-  const currentPlayer = players[currentPlayerIndex];
-  
-  if (!currentPlayer) return [];
-  
-  switch (currentPlayer.orientation) {
-    case 'hetero':
-      // Para heterossexuais, sugere interação com jogadores de orientação diferente
-      // Aqui precisaríamos do gênero, em uma implementação real
-      return players.filter((_, index) => index !== currentPlayerIndex);
-      
-    case 'homo':
-      // Para homossexuais, sugere interação com jogadores de mesma orientação
-      // Novamente, precisaríamos do gênero real
-      return players.filter(p => 
-        p.orientation === 'homo' && 
-        players.indexOf(p) !== currentPlayerIndex
+  // Lógica de compatibilidade baseada na orientação sexual
+  switch (player.orientation) {
+    case "hetero":
+      // Seleciona jogadores com orientação compatível (hetero ou bi do sexo oposto)
+      compatiblePlayers = allPlayers.filter(p => 
+        p.id !== player.id && (p.orientation === "hetero" || p.orientation === "bi")
       );
+      break;
       
-    case 'bi':
-    case 'outro':
-      // Para bissexuais e outros, qualquer jogador é válido
-      return players.filter((_, index) => index !== currentPlayerIndex);
+    case "homo":
+      // Seleciona jogadores com orientação compatível (homo ou bi do mesmo sexo)
+      compatiblePlayers = allPlayers.filter(p => 
+        p.id !== player.id && (p.orientation === "homo" || p.orientation === "bi")
+      );
+      break;
       
-    default:
-      return players.filter((_, index) => index !== currentPlayerIndex);
+    case "bi":
+      // Bisexual pode interagir com qualquer orientação que seja compatível
+      compatiblePlayers = allPlayers.filter(p => 
+        p.id !== player.id && (
+          (p.orientation === "hetero") || 
+          (p.orientation === "homo") || 
+          (p.orientation === "bi")
+        )
+      );
+      break;
+      
+    case "outro":
+      // Para "outro", considere todos compatíveis
+      compatiblePlayers = allPlayers.filter(p => p.id !== player.id);
+      break;
   }
+  
+  // Se não houver jogadores compatíveis suficientes, retorna todos os jogadores exceto o próprio
+  if (compatiblePlayers.length < count) {
+    compatiblePlayers = allPlayers.filter(p => p.id !== player.id);
+  }
+  
+  // Embaralha e retorna o número solicitado
+  return shuffleArray(compatiblePlayers).slice(0, count);
+}
+
+// Função auxiliar para embaralhar array
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
 }
