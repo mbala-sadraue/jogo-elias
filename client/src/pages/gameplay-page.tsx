@@ -25,10 +25,25 @@ export default function GameplayPage() {
   const [gameOptions, setGameOptions] = useState({ intensity: "suave" });
   const [timerActive, setTimerActive] = useState(false);
   
-  // Estado para controlar se está mostrando a seleção de tipo
-  const [showTypeSelection, setShowTypeSelection] = useState<boolean>(true);
   // Estado para armazenar o tipo selecionado (pergunta ou desafio)
-  const [selectedType, setSelectedType] = useState<"pergunta" | "desafio" | null>(null);
+  const [selectedType, setSelectedType] = useState<"pergunta" | "desafio">(Math.random() < 0.5 ? "pergunta" : "desafio");
+  // Estado para exibir o tipo selecionado antes de mostrar o desafio/pergunta
+  const [showTypeIndicator, setShowTypeIndicator] = useState<boolean>(true);
+  
+  // Função para inicializar o primeiro tipo de forma aleatória
+  const initializeFirstRound = () => {
+    // Seleciona aleatoriamente entre pergunta ou desafio
+    const initialType = Math.random() < 0.5 ? "pergunta" : "desafio";
+    setSelectedType(initialType);
+    
+    // Mostrar o indicador de tipo selecionado
+    setShowTypeIndicator(true);
+    
+    // Após 1.5 segundos, ocultar o indicador e mostrar o desafio/pergunta
+    setTimeout(() => {
+      setShowTypeIndicator(false);
+    }, 1500);
+  };
   
   useEffect(() => {
     // Carregar jogadores da sessionStorage
@@ -45,6 +60,9 @@ export default function GameplayPage() {
     if (storedOptions) {
       setGameOptions(JSON.parse(storedOptions));
     }
+    
+    // Inicializa a primeira rodada
+    initializeFirstRound();
   }, [navigate]);
   
   // Função para formatar o tempo do timer
@@ -163,18 +181,27 @@ export default function GameplayPage() {
   // Obter desafios e garantir que todos tenham índice
   const challenges = selectedType ? getFilteredChallenges(selectedType) : getChallengesByCategory(category);
   
-  // Handler para selecionar tipo
-  const handleSelectType = (type: "pergunta" | "desafio") => {
-    setSelectedType(type);
-    setShowTypeSelection(false);
-    // Resetar o índice para começar com um novo desafio do tipo selecionado
-    setCurrentChallengeIndex(0);
+  // Função para selecionar aleatoriamente o próximo tipo (pergunta ou desafio)
+  const selectRandomType = (): "pergunta" | "desafio" => {
+    return Math.random() < 0.5 ? "pergunta" : "desafio";
   };
   
-  // Função para resetar e mostrar a seleção de tipo novamente
+  // Função para iniciar a próxima rodada com um novo tipo aleatório
   const handleNextRound = () => {
-    setShowTypeSelection(true);
-    setSelectedType(null);
+    // Seleciona aleatoriamente entre pergunta ou desafio
+    const newType = selectRandomType();
+    setSelectedType(newType);
+    
+    // Mostrar o indicador de tipo selecionado
+    setShowTypeIndicator(true);
+    
+    // Após 1.5 segundos, ocultar o indicador e mostrar o desafio/pergunta
+    setTimeout(() => {
+      setShowTypeIndicator(false);
+    }, 1500);
+    
+    // Resetar o índice para começar com um novo desafio do tipo selecionado
+    setCurrentChallengeIndex(0);
   };
   
   if (challenges.length === 0) {
@@ -290,9 +317,9 @@ export default function GameplayPage() {
         </motion.div>
       </div>
       
-      {/* Type Selection or Current Challenge */}
+      {/* Type Indicator or Current Challenge */}
       <div className="px-4 pt-4 pb-20">
-        {showTypeSelection ? (
+        {showTypeIndicator ? (
           <motion.div 
             className="py-4"
             variants={slideFromRight}
@@ -300,38 +327,22 @@ export default function GameplayPage() {
             animate="visible"
           >
             <div className="text-center text-white mb-6">
-              <h2 className="text-2xl font-bold">Escolha o tipo</h2>
-              <p className="text-white/80">O que você prefere?</p>
+              <h2 className="text-2xl font-bold">
+                {selectedType === "pergunta" ? "Pergunta" : "Desafio"}
+              </h2>
+              <p className="text-white/80">É a vez de {currentPlayer}</p>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => handleSelectType("pergunta")}
-                className="py-8 rounded-xl bg-gradient-to-br from-blue-500/80 to-blue-700/80 border-0 text-white hover:from-blue-500 hover:to-blue-700"
-              >
-                <div className="flex flex-col items-center">
-                  <HelpCircle className="h-10 w-10 mb-2" />
-                  <span className="text-lg font-bold">Pergunta</span>
+            <div className="flex justify-center">
+              {selectedType === "pergunta" ? (
+                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-blue-500/80 to-blue-700/80 flex items-center justify-center">
+                  <HelpCircle className="h-16 w-16 text-white" />
                 </div>
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => handleSelectType("desafio")}
-                className="py-8 rounded-xl bg-gradient-to-br from-orange-500/80 to-orange-700/80 border-0 text-white hover:from-orange-500 hover:to-orange-700"
-              >
-                <div className="flex flex-col items-center">
-                  <Flame className="h-10 w-10 mb-2" />
-                  <span className="text-lg font-bold">Desafio</span>
+              ) : (
+                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-orange-500/80 to-orange-700/80 flex items-center justify-center">
+                  <Flame className="h-16 w-16 text-white" />
                 </div>
-              </Button>
-            </div>
-            
-            <div className="mt-6 text-center text-white/80 text-sm">
-              <p>É a vez de <span className="font-bold text-white">{currentPlayer}</span></p>
+              )}
             </div>
           </motion.div>
         ) : (
