@@ -4,118 +4,134 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 240 10% 3.9%;
+    --background: 240 20% 8%;
+    --foreground: 0 0% 98%;
     
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card: 240 20% 10%;
+    --card-foreground: 0 0% 98%;
     
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover: 240 20% 10%;
+    --popover-foreground: 0 0% 98%;
     
-    /* Tema principal: Roxo vibrante */
-    --primary: 280 90% 50%;
+    /* Tema principal: Roxo escuro e sensual */
+    --primary: 280 80% 40%;
     --primary-foreground: 0 0% 98%;
-    --primary-light: 280 90% 60%;
-    --primary-dark: 280 90% 35%;
+    --primary-light: 280 80% 50%;
+    --primary-dark: 280 80% 25%;
     
-    /* Cor de destaque: Magenta neon */
-    --secondary: 330 100% 60%;
+    /* Cor de destaque: Vermelho-púrpura intenso */
+    --secondary: 330 85% 45%;
     --secondary-foreground: 0 0% 98%;
-    --secondary-light: 330 100% 70%;
-    --secondary-dark: 330 100% 50%;
+    --secondary-light: 330 85% 55%;
+    --secondary-dark: 330 85% 35%;
     
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted: 240 10% 15%;
+    --muted-foreground: 240 5% 65%;
     
-    --accent: 250 95% 65%;
+    --accent: 250 80% 50%;
     --accent-foreground: 0 0% 98%;
     
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 80% 50%;
     --destructive-foreground: 0 0% 98%;
     
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 280 90% 50%;
+    --border: 240 10% 20%;
+    --input: 240 10% 20%;
+    --ring: 280 80% 40%;
     
-    --chart-1: 280 90% 50%;
-    --chart-2: 330 100% 60%;
-    --chart-3: 210 100% 60%;
-    --chart-4: 25 100% 55%;
-    --chart-5: 0 90% 55%;
+    --chart-1: 280 80% 45%;
+    --chart-2: 330 85% 50%;
+    --chart-3: 210 80% 50%;
+    --chart-4: 25 90% 45%;
+    --chart-5: 0 80% 45%;
     
     --radius: 0.5rem;
     
-    /* Game category colors - cores melhoradas */
-    --suave: 210 100% 60%;
-    --suave-light: 210 90% 70%;
-    --suave-dark: 210 100% 40%;
+    /* Game category colors - tons mais escuros e sensuais */
+    --suave: 210 80% 45%;
+    --suave-light: 210 80% 55%;
+    --suave-dark: 210 80% 35%;
     
-    --picante: 25 100% 55%;
-    --picante-light: 25 100% 65%;
-    --picante-dark: 25 100% 45%;
+    --picante: 25 85% 45%;
+    --picante-light: 25 85% 55%;
+    --picante-dark: 25 85% 35%;
     
-    --selvagem: 0 90% 55%;
-    --selvagem-light: 0 90% 65%;
-    --selvagem-dark: 0 90% 45%;
+    --selvagem: 0 80% 45%;
+    --selvagem-light: 0 80% 55%;
+    --selvagem-dark: 0 80% 35%;
     
-    --extremo: 270 80% 55%;
-    --extremo-light: 270 80% 65%;
-    --extremo-dark: 270 80% 45%;
+    --extremo: 270 85% 40%;
+    --extremo-light: 270 85% 50%;
+    --extremo-dark: 270 85% 30%;
     
     --light: 0 0% 98%;
-    --dark: 240 20% 10%;
+    --dark: 240 20% 6%;
+    
+    /* Novas cores para modos de jogo */
+    --story-mode: 260 80% 40%;
+    --roleplay-mode: 300 80% 40%;
+    --roulette-mode: 340 80% 40%;
+    --mood-gauge: 180 80% 40%;
+    --secret-vault: 220 80% 40%;
+    --sync-challenge: 30 80% 40%;
   }
   
   .dark {
-    --background: 240 15% 10%;
+    --background: 240 25% 6%;
     --foreground: 0 0% 98%;
     
-    --card: 240 15% 12%;
+    --card: 240 25% 8%;
     --card-foreground: 0 0% 98%;
     
-    --popover: 240 15% 12%;
+    --popover: 240 25% 8%;
     --popover-foreground: 0 0% 98%;
     
-    --primary: 280 90% 55%;
+    --primary: 280 75% 35%;
     --primary-foreground: 0 0% 98%;
-    --primary-light: 280 90% 65%;
-    --primary-dark: 280 90% 45%;
+    --primary-light: 280 75% 45%;
+    --primary-dark: 280 75% 25%;
     
-    --secondary: 330 100% 65%;
+    --secondary: 330 80% 40%;
     --secondary-foreground: 0 0% 98%;
-    --secondary-light: 330 100% 75%;
-    --secondary-dark: 330 100% 55%;
+    --secondary-light: 330 80% 50%;
+    --secondary-dark: 330 80% 30%;
     
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 240 15% 12%;
+    --muted-foreground: 240 10% 60%;
     
-    --accent: 250 95% 70%;
+    --accent: 250 75% 45%;
     --accent-foreground: 0 0% 98%;
     
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 85.7% 97.3%;
+    --destructive: 0 70% 40%;
+    --destructive-foreground: 0 85% 97%;
     
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 280 90% 60%;
+    --border: 240 15% 18%;
+    --input: 240 15% 18%;
+    --ring: 280 75% 35%;
     
-    /* Categorias do jogo no modo escuro - mais vibrantes */
-    --suave: 210 95% 65%;
-    --suave-light: 210 95% 75%;
-    --suave-dark: 210 95% 55%;
+    /* Categorias do jogo no modo escuro - intensos e sensuais */
+    --suave: 210 75% 45%;
+    --suave-light: 210 75% 55%;
+    --suave-dark: 210 75% 35%;
     
-    --picante: 25 100% 65%;
-    --picante-light: 25 100% 75%;
-    --picante-dark: 25 100% 55%;
+    --picante: 25 80% 45%;
+    --picante-light: 25 80% 55%;
+    --picante-dark: 25 80% 35%;
     
-    --selvagem: 0 95% 65%;
-    --selvagem-light: 0 95% 75%;
-    --selvagem-dark: 0 95% 55%;
+    --selvagem: 0 80% 45%;
+    --selvagem-light: 0 80% 55%;
+    --selvagem-dark: 0 80% 35%;
     
-    --extremo: 270 85% 65%;
-    --extremo-light: 270 85% 75%;
-    --extremo-dark: 270 85% 55%;
+    --extremo: 270 80% 40%;
+    --extremo-light: 270 80% 50%;
+    --extremo-dark: 270 80% 30%;
+    
+    /* Novas cores para modos de jogo em dark mode */
+    --story-mode: 260 75% 35%;
+    --roleplay-mode: 300 75% 35%;
+    --roulette-mode: 340 75% 35%;
+    --mood-gauge: 180 75% 35%;
+    --secret-vault: 220 75% 35%;
+    --sync-challenge: 30 75% 35%;
   }
 }
 
@@ -163,21 +179,46 @@
     background-color: hsl(var(--extremo));
   }
   
-  /* Gradientes para categorias */
+  /* Gradientes para categorias - mais escuros e intensos */
   .bg-gradient-suave {
-    @apply bg-gradient-to-br from-blue-400 to-blue-600;
+    @apply bg-gradient-to-br from-blue-600 to-blue-900;
   }
   
   .bg-gradient-picante {
-    @apply bg-gradient-to-br from-orange-400 to-orange-600;
+    @apply bg-gradient-to-br from-orange-600 to-orange-900;
   }
   
   .bg-gradient-selvagem {
-    @apply bg-gradient-to-br from-red-400 to-red-600;
+    @apply bg-gradient-to-br from-red-600 to-red-900;
   }
   
   .bg-gradient-extremo {
-    @apply bg-gradient-to-br from-purple-400 to-purple-600;
+    @apply bg-gradient-to-br from-purple-600 to-purple-900;
+  }
+  
+  /* Gradientes para novos modos de jogo */
+  .bg-gradient-story {
+    @apply bg-gradient-to-br from-indigo-600 to-indigo-900;
+  }
+  
+  .bg-gradient-roleplay {
+    @apply bg-gradient-to-br from-fuchsia-600 to-fuchsia-900;
+  }
+  
+  .bg-gradient-roulette {
+    @apply bg-gradient-to-br from-rose-600 to-rose-900;
+  }
+  
+  .bg-gradient-mood {
+    @apply bg-gradient-to-br from-cyan-600 to-cyan-900;
+  }
+  
+  .bg-gradient-vault {
+    @apply bg-gradient-to-br from-sky-600 to-sky-900;
+  }
+  
+  .bg-gradient-sync {
+    @apply bg-gradient-to-br from-amber-600 to-amber-900;
   }
   
   /* Cores de texto para categorias */
