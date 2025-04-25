@@ -13,60 +13,84 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
     
-    --primary: 332 100% 65%;
+    /* Tema principal: Roxo vibrante */
+    --primary: 280 90% 50%;
     --primary-foreground: 0 0% 98%;
+    --primary-light: 280 90% 60%;
+    --primary-dark: 280 90% 35%;
     
-    --secondary: 15 100% 75%;
-    --secondary-foreground: 240 5.9% 10%;
+    /* Cor de destaque: Magenta neon */
+    --secondary: 330 100% 60%;
+    --secondary-foreground: 0 0% 98%;
+    --secondary-light: 330 100% 70%;
+    --secondary-dark: 330 100% 50%;
     
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
     
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --accent: 250 95% 65%;
+    --accent-foreground: 0 0% 98%;
     
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    --ring: 280 90% 50%;
     
-    --chart-1: 332 100% 65%;
-    --chart-2: 15 100% 75%;
-    --chart-3: 191 53% 52%;
-    --chart-4: 317 60% 32%;
-    --chart-5: 240 5.9% 50%;
+    --chart-1: 280 90% 50%;
+    --chart-2: 330 100% 60%;
+    --chart-3: 210 100% 60%;
+    --chart-4: 25 100% 55%;
+    --chart-5: 0 90% 55%;
     
     --radius: 0.5rem;
     
-    /* Game category colors */
-    --suave: 191 53% 52%;
-    --picante: 15 100% 75%;
-    --selvagem: 332 100% 65%;
-    --extremo: 317 60% 32%;
+    /* Game category colors - cores melhoradas */
+    --suave: 210 100% 60%;
+    --suave-light: 210 90% 70%;
+    --suave-dark: 210 100% 40%;
+    
+    --picante: 25 100% 55%;
+    --picante-light: 25 100% 65%;
+    --picante-dark: 25 100% 45%;
+    
+    --selvagem: 0 90% 55%;
+    --selvagem-light: 0 90% 65%;
+    --selvagem-dark: 0 90% 45%;
+    
+    --extremo: 270 80% 55%;
+    --extremo-light: 270 80% 65%;
+    --extremo-dark: 270 80% 45%;
+    
+    --light: 0 0% 98%;
+    --dark: 240 20% 10%;
   }
   
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 240 15% 10%;
     --foreground: 0 0% 98%;
     
-    --card: 240 10% 12%;
+    --card: 240 15% 12%;
     --card-foreground: 0 0% 98%;
     
-    --popover: 240 10% 12%;
+    --popover: 240 15% 12%;
     --popover-foreground: 0 0% 98%;
     
-    --primary: 332 100% 65%;
+    --primary: 280 90% 55%;
     --primary-foreground: 0 0% 98%;
+    --primary-light: 280 90% 65%;
+    --primary-dark: 280 90% 45%;
     
-    --secondary: 15 100% 75%;
+    --secondary: 330 100% 65%;
     --secondary-foreground: 0 0% 98%;
+    --secondary-light: 330 100% 75%;
+    --secondary-dark: 330 100% 55%;
     
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
     
-    --accent: 240 3.7% 15.9%;
+    --accent: 250 95% 70%;
     --accent-foreground: 0 0% 98%;
     
     --destructive: 0 62.8% 30.6%;
@@ -74,7 +98,24 @@
     
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --ring: 280 90% 60%;
+    
+    /* Categorias do jogo no modo escuro - mais vibrantes */
+    --suave: 210 95% 65%;
+    --suave-light: 210 95% 75%;
+    --suave-dark: 210 95% 55%;
+    
+    --picante: 25 100% 65%;
+    --picante-light: 25 100% 75%;
+    --picante-dark: 25 100% 55%;
+    
+    --selvagem: 0 95% 65%;
+    --selvagem-light: 0 95% 75%;
+    --selvagem-dark: 0 95% 55%;
+    
+    --extremo: 270 85% 65%;
+    --extremo-light: 270 85% 75%;
+    --extremo-dark: 270 85% 55%;
   }
 }
 
@@ -105,6 +146,7 @@
     scrollbar-width: none;
   }
   
+  /* Cores sólidas para categorias */
   .bg-suave {
     background-color: hsl(var(--suave));
   }
@@ -121,6 +163,24 @@
     background-color: hsl(var(--extremo));
   }
   
+  /* Gradientes para categorias */
+  .bg-gradient-suave {
+    @apply bg-gradient-to-br from-blue-400 to-blue-600;
+  }
+  
+  .bg-gradient-picante {
+    @apply bg-gradient-to-br from-orange-400 to-orange-600;
+  }
+  
+  .bg-gradient-selvagem {
+    @apply bg-gradient-to-br from-red-400 to-red-600;
+  }
+  
+  .bg-gradient-extremo {
+    @apply bg-gradient-to-br from-purple-400 to-purple-600;
+  }
+  
+  /* Cores de texto para categorias */
   .text-suave {
     color: hsl(var(--suave));
   }
@@ -137,6 +197,7 @@
     color: hsl(var(--extremo));
   }
   
+  /* Cores com transparência */
   .bg-suave\/20 {
     background-color: hsl(var(--suave) / 0.2);
   }
@@ -151,5 +212,74 @@
   
   .bg-extremo\/20 {
     background-color: hsl(var(--extremo) / 0.2);
+  }
+  
+  /* Cores de bordas */
+  .border-suave {
+    border-color: hsl(var(--suave));
+  }
+  
+  .border-picante {
+    border-color: hsl(var(--picante));
+  }
+  
+  .border-selvagem {
+    border-color: hsl(var(--selvagem));
+  }
+  
+  .border-extremo {
+    border-color: hsl(var(--extremo));
+  }
+  
+  /* Efeitos de vidro e glassmorphism */
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-lg;
+  }
+  
+  /* Animações extras */
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 15px 0 rgba(255, 255, 255, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 25px 5px rgba(255, 255, 255, 0.7);
+    }
+  }
+  
+  .pulse-animation {
+    animation: pulse-glow 2s infinite;
+  }
+  
+  /* Estilos para inputs em fundos escuros */
+  .dark-input {
+    @apply bg-white/20 border-white/20 text-white placeholder:text-white/50;
+  }
+  
+  .dark-input:focus {
+    @apply border-white/70 outline-none ring-2 ring-white/30;
+  }
+  
+  /* Outros efeitos para o jogo */
+  .flip-card {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+  }
+  
+  .flip-card-inner {
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+  }
+  
+  .flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+  
+  .flip-card-front, .flip-card-back {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  .flip-card-back {
+    transform: rotateY(180deg);
   }
 }

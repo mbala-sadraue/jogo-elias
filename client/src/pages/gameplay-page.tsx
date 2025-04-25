@@ -10,125 +10,7 @@ import ChallengeCard from "@/components/challenge-card";
 import { CategoryType } from "@/components/category-card";
 import { useToast } from "@/hooks/use-toast";
 
-// Desafios de exemplo por categoria
-const MOCK_CHALLENGES = {
-  suave: [
-    {
-      id: "s1",
-      title: "Compartilhe uma memória",
-      description: "Conte aos outros jogadores sobre uma memória feliz que você tenha. Pode ser algo da infância, uma viagem, ou qualquer momento especial.",
-      type: "pergunta",
-      duration: "2 min",
-      index: 1,
-      category: "suave" as CategoryType
-    },
-    {
-      id: "s2",
-      title: "Preferências",
-      description: "Se você pudesse viajar para qualquer lugar do mundo agora, onde seria e por quê?",
-      type: "pergunta",
-      duration: "1 min",
-      index: 2,
-      category: "suave" as CategoryType
-    },
-    {
-      id: "s3",
-      title: "Confissão leve",
-      description: "Confesse algo engraçado ou fofo que você nunca contou para os outros jogadores.",
-      type: "desafio",
-      duration: "2 min", 
-      index: 3,
-      category: "suave" as CategoryType
-    },
-  ],
-  picante: [
-    {
-      id: "p1",
-      title: "Verdade picante",
-      description: "Qual foi a situação mais constrangedora que você já passou em um encontro romântico?",
-      type: "pergunta",
-      duration: "2 min",
-      index: 1,
-      category: "picante" as CategoryType
-    },
-    {
-      id: "p2",
-      title: "Desafio picante",
-      description: "Faça uma imitação engraçada de outro jogador nesta sala.",
-      type: "desafio",
-      duration: "1 min",
-      index: 2, 
-      category: "picante" as CategoryType
-    },
-    {
-      id: "p3",
-      title: "Demonstre seus talentos",
-      description: "Mostre para todos uma habilidade ou talento que poucos sabem que você tem.",
-      type: "desafio",
-      duration: "2 min",
-      index: 3,
-      category: "picante" as CategoryType
-    }
-  ],
-  selvagem: [
-    {
-      id: "sv1",
-      title: "Confissão selvagem",
-      description: "Qual é a coisa mais louca que você já fez por impulso?",
-      type: "pergunta",
-      duration: "2 min",
-      index: 1,
-      category: "selvagem" as CategoryType
-    },
-    {
-      id: "sv2",
-      title: "Charadas rápidas",
-      description: "Você tem 30 segundos para adivinhar pelo menos 2 charadas que os outros jogadores farão para você.",
-      type: "desafio",
-      duration: "30 seg",
-      index: 2,
-      category: "selvagem" as CategoryType
-    },
-    {
-      id: "sv3",
-      title: "Imitação famosa",
-      description: "Imite um personagem famoso de filme ou série por 1 minuto enquanto os outros tentam adivinhar.",
-      type: "prêmio",
-      duration: "1 min",
-      index: 3,
-      category: "selvagem" as CategoryType
-    }
-  ],
-  extremo: [
-    {
-      id: "e1",
-      title: "Verdade extrema",
-      description: "Qual foi a travessura mais radical que você já fez e nunca contou para ninguém?",
-      type: "pergunta",
-      duration: "2 min",
-      index: 1,
-      category: "extremo" as CategoryType
-    },
-    {
-      id: "e2",
-      title: "Dança maluca",
-      description: "Dance por 1 minuto da forma mais louca que você conseguir, sem parar!",
-      type: "desafio",
-      duration: "1 min",
-      index: 2,
-      category: "extremo" as CategoryType
-    },
-    {
-      id: "e3",
-      title: "História maluca",
-      description: "Invente uma história absurda incluindo todos os jogadores presentes. Seja criativo!",
-      type: "penalidade", 
-      duration: "2 min",
-      index: 3,
-      category: "extremo" as CategoryType
-    }
-  ]
-};
+import { ALL_CHALLENGES, GameChallenge, getChallengesByCategory } from "@/data/challenges";
 
 export default function GameplayPage() {
   const { toast } = useToast();
@@ -284,11 +166,11 @@ export default function GameplayPage() {
     navigate('/home');
   };
   
-  // Usar os desafios da categoria correspondente
+  // Usar os desafios da categoria correspondente 
   const category = categoryId as CategoryType || "suave";
-  const challenges = MOCK_CHALLENGES[category];
+  const challenges = ALL_CHALLENGES[category] || [];
   
-  if (!challenges || challenges.length === 0) {
+  if (challenges.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary to-primary-dark flex items-center justify-center">
         <div className="text-center text-white p-6">
