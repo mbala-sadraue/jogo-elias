@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useParams } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowLeft, Users, Timer, Trophy } from "lucide-react";
-import { HelpCircle, Flame } from "lucide-react";
+import { ArrowLeft, Timer, Trophy, HelpCircle, Flame } from "lucide-react";
 import { fadeIn, slideFromRight } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -11,7 +10,7 @@ import ChallengeCard from "@/components/challenge-card";
 import { CategoryType } from "@/components/category-card";
 import { useToast } from "@/hooks/use-toast";
 
-import { ALL_CHALLENGES, GameChallenge, getChallengesByCategory } from "@/data/challenges";
+import { GameChallenge, getChallengesByCategory } from "@/data/challenges";
 
 export default function GameplayPage() {
   const { toast } = useToast();
@@ -25,28 +24,13 @@ export default function GameplayPage() {
   const [gameOptions, setGameOptions] = useState({ intensity: "suave" });
   const [timerActive, setTimerActive] = useState(false);
   
-  // Estado para armazenar o tipo selecionado (pergunta ou desafio)
-  const [selectedType, setSelectedType] = useState<"pergunta" | "desafio">(Math.random() < 0.5 ? "pergunta" : "desafio");
-  // Estado para exibir o tipo selecionado antes de mostrar o desafio/pergunta
-  const [showTypeIndicator, setShowTypeIndicator] = useState<boolean>(true);
+  // Estado para alternar entre mostrar tipo ou desafio
+  const [showingType, setShowingType] = useState(true);
+  // Estado para armazenar o tipo atual (pergunta ou desafio)
+  const [currentType, setCurrentType] = useState<"pergunta" | "desafio">("pergunta");
   
-  // Função para inicializar o primeiro tipo de forma aleatória
-  const initializeFirstRound = () => {
-    // Seleciona aleatoriamente entre pergunta ou desafio
-    const initialType = Math.random() < 0.5 ? "pergunta" : "desafio";
-    setSelectedType(initialType);
-    
-    // Mostrar o indicador de tipo selecionado
-    setShowTypeIndicator(true);
-    
-    // Após 1.5 segundos, ocultar o indicador e mostrar o desafio/pergunta
-    setTimeout(() => {
-      setShowTypeIndicator(false);
-    }, 1500);
-  };
-  
+  // Carregar jogadores da sessionStorage
   useEffect(() => {
-    // Carregar jogadores da sessionStorage
     const storedPlayers = sessionStorage.getItem("players");
     const storedOptions = sessionStorage.getItem("gameOptions");
     
@@ -61,8 +45,8 @@ export default function GameplayPage() {
       setGameOptions(JSON.parse(storedOptions));
     }
     
-    // Inicializa a primeira rodada
-    initializeFirstRound();
+    // Inicializa o jogo com um tipo aleatório
+    startNewRound();
   }, [navigate]);
   
   // Função para formatar o tempo do timer
@@ -121,6 +105,29 @@ export default function GameplayPage() {
     return () => clearInterval(interval);
   }, [timerActive, timer, toast]);
   
+  // Escolher um tipo aleatório entre pergunta e desafio
+  const getRandomType = (): "pergunta" | "desafio" => {
+    return Math.random() < 0.5 ? "pergunta" : "desafio";
+  };
+  
+  // Iniciar uma nova rodada
+  const startNewRound = () => {
+    // Seleciona aleatoriamente entre pergunta ou desafio
+    const newType = getRandomType();
+    setCurrentType(newType);
+    
+    // Mostrar o tipo selecionado
+    setShowingType(true);
+    
+    // Após 1.5 segundo, mostrar o desafio
+    setTimeout(() => {
+      setShowingType(false);
+    }, 1500);
+    
+    // Resetar o índice do desafio
+    setCurrentChallengeIndex(0);
+  };
+  
   const handleCompleteChallenge = () => {
     // Parar o timer se estiver ativo
     if (timerActive) {
@@ -134,8 +141,8 @@ export default function GameplayPage() {
     // Avançar para o próximo jogador
     setCurrentPlayerIndex(prev => (prev + 1) % players.length);
     
-    // Mostrar a seleção de tipo novamente
-    handleNextRound();
+    // Iniciar nova rodada
+    startNewRound();
     
     toast({
       title: "Desafio concluído!",
@@ -153,8 +160,8 @@ export default function GameplayPage() {
     // Avançar para o próximo jogador
     setCurrentPlayerIndex(prev => (prev + 1) % players.length);
     
-    // Mostrar a seleção de tipo novamente
-    handleNextRound();
+    // Iniciar nova rodada
+    startNewRound();
     
     toast({
       title: "Desafio pulado",
@@ -166,50 +173,24 @@ export default function GameplayPage() {
     navigate('/home');
   };
   
-  // Usar os desafios da categoria correspondente 
+  // Usar a categoria correspondente ou padrão "suave"
   const category = categoryId as CategoryType || "suave";
   
-  // Função para obter desafios filtrados por tipo
-  const getFilteredChallenges = (type?: "pergunta" | "desafio") => {
-    let challenges = getChallengesByCategory(category);
-    if (type) {
-      challenges = challenges.filter(challenge => challenge.type === type);
-    }
-    return challenges;
+  // Filtrar desafios pelo tipo atual
+  const getChallengesByType = (type: "pergunta" | "desafio"): GameChallenge[] => {
+    const allChallenges = getChallengesByCategory(category);
+    return allChallenges.filter(challenge => challenge.type === type);
   };
   
-  // Obter desafios e garantir que todos tenham índice
-  const challenges = selectedType ? getFilteredChallenges(selectedType) : getChallengesByCategory(category);
+  // Obter desafios filtrados pelo tipo atual
+  const filteredChallenges = getChallengesByType(currentType);
   
-  // Função para selecionar aleatoriamente o próximo tipo (pergunta ou desafio)
-  const selectRandomType = (): "pergunta" | "desafio" => {
-    return Math.random() < 0.5 ? "pergunta" : "desafio";
-  };
-  
-  // Função para iniciar a próxima rodada com um novo tipo aleatório
-  const handleNextRound = () => {
-    // Seleciona aleatoriamente entre pergunta ou desafio
-    const newType = selectRandomType();
-    setSelectedType(newType);
-    
-    // Mostrar o indicador de tipo selecionado
-    setShowTypeIndicator(true);
-    
-    // Após 1.5 segundos, ocultar o indicador e mostrar o desafio/pergunta
-    setTimeout(() => {
-      setShowTypeIndicator(false);
-    }, 1500);
-    
-    // Resetar o índice para começar com um novo desafio do tipo selecionado
-    setCurrentChallengeIndex(0);
-  };
-  
-  if (challenges.length === 0) {
+  if (filteredChallenges.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary to-primary-dark flex items-center justify-center">
         <div className="text-center text-white p-6">
-          <h2 className="text-2xl font-bold mb-4">Categoria não encontrada</h2>
-          <p className="mb-6">Não conseguimos encontrar desafios para esta categoria.</p>
+          <h2 className="text-2xl font-bold mb-4">Nenhum {currentType} encontrado</h2>
+          <p className="mb-6">Não conseguimos encontrar {currentType}s para esta categoria.</p>
           <Button 
             onClick={() => navigate('/home')}
             className="bg-white text-primary hover:bg-white/90"
@@ -221,10 +202,10 @@ export default function GameplayPage() {
     );
   }
   
-  const currentChallenge = challenges[currentChallengeIndex];
-  const currentPlayer = players[currentPlayerIndex];
-  const totalChallenges = challenges.length;
-  const progress = Math.round((completedChallenges / totalChallenges) * 100);
+  const currentChallenge = filteredChallenges[currentChallengeIndex];
+  const currentPlayer = players[currentPlayerIndex] || "Jogador";
+  const totalChallenges = filteredChallenges.length;
+  const progress = Math.round((completedChallenges / 20) * 100); // Limitando a 20 desafios para barra de progresso
   
   return (
     <motion.div
@@ -274,7 +255,7 @@ export default function GameplayPage() {
                 </AvatarFallback>
               </Avatar>
               <h2 className="font-bold text-white text-lg mt-2">
-                {currentPlayer || "Jogador"}
+                {currentPlayer}
               </h2>
               <div className="flex items-center mt-1">
                 <span className="text-xs px-2 py-0.5 bg-white/20 text-white rounded-full">
@@ -285,27 +266,29 @@ export default function GameplayPage() {
           </div>
           
           {/* Players */}
-          <div className="mt-3 flex justify-center -space-x-2 overflow-hidden">
-            {players.map((player, index) => (
-              <Avatar 
-                key={index} 
-                className={`inline-block w-8 h-8 border-2 ${currentPlayerIndex === index ? 'border-yellow-300 scale-110 z-10' : 'border-white opacity-70'} transition-all`}
-              >
-                <AvatarFallback 
-                  className={`${currentPlayerIndex === index ? 'bg-secondary' : 'bg-primary-light'} text-white font-semibold`}
+          {players.length > 1 && (
+            <div className="mt-3 flex justify-center -space-x-2 overflow-hidden">
+              {players.map((player, index) => (
+                <Avatar 
+                  key={index} 
+                  className={`inline-block w-8 h-8 border-2 ${currentPlayerIndex === index ? 'border-yellow-300 scale-110 z-10' : 'border-white opacity-70'} transition-all`}
                 >
-                  {player.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            ))}
-          </div>
+                  <AvatarFallback 
+                    className={`${currentPlayerIndex === index ? 'bg-secondary' : 'bg-primary-light'} text-white font-semibold`}
+                  >
+                    {player.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              ))}
+            </div>
+          )}
           
           {/* Progress bar */}
           <div className="mt-4 relative px-2">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-white/80">Progresso</span>
               <span className="text-xs text-white">
-                {completedChallenges}/{totalChallenges}
+                {completedChallenges}/20
               </span>
             </div>
             <Progress 
@@ -319,7 +302,7 @@ export default function GameplayPage() {
       
       {/* Type Indicator or Current Challenge */}
       <div className="px-4 pt-4 pb-20">
-        {showTypeIndicator ? (
+        {showingType ? (
           <motion.div 
             className="py-4"
             variants={slideFromRight}
@@ -328,13 +311,13 @@ export default function GameplayPage() {
           >
             <div className="text-center text-white mb-6">
               <h2 className="text-2xl font-bold">
-                {selectedType === "pergunta" ? "Pergunta" : "Desafio"}
+                {currentType === "pergunta" ? "Pergunta" : "Desafio"}
               </h2>
               <p className="text-white/80">É a vez de {currentPlayer}</p>
             </div>
             
             <div className="flex justify-center">
-              {selectedType === "pergunta" ? (
+              {currentType === "pergunta" ? (
                 <div className="w-28 h-28 rounded-full bg-gradient-to-br from-blue-500/80 to-blue-700/80 flex items-center justify-center">
                   <HelpCircle className="h-16 w-16 text-white" />
                 </div>
