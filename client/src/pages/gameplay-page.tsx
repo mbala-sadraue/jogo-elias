@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useLocation, useParams } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowLeft, Timer, Trophy, HelpCircle, Flame } from "lucide-react";
+import { ArrowLeft, Timer, Trophy, HelpCircle, Flame, Gift, AlertTriangle, RotateCcw } from "lucide-react";
 import { fadeIn, slideFromRight } from "@/lib/animations";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -10,8 +10,17 @@ import ChallengeCard from "@/components/challenge-card";
 import { CategoryType } from "@/components/category-card";
 import { useToast } from "@/hooks/use-toast";
 
-import { GameChallenge } from "@/data/challenges";
+import { ChallengeType, GameChallenge } from "@/data/challenges";
 import { getExpandedChallenges, getRandomExpandedChallenge } from "@/data/expanded-challenges";
+
+// Interface para a roleta de tipos de conteúdo
+interface RouletteItem {
+  type: ChallengeType;
+  icon: React.ElementType;
+  label: string;
+  color: string;
+  bgClass: string;
+}
 
 export default function GameplayPage() {
   const { toast } = useToast();
@@ -21,20 +30,63 @@ export default function GameplayPage() {
   const [players, setPlayers] = useState<string[]>([]);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [completedChallenges, setCompletedChallenges] = useState(0);
-  const [gameOptions, setGameOptions] = useState({ intensity: "suave" });
+  const [gameOptions, setGameOptions] = useState({
+    intensity: "suave",
+    timer: true,
+    challengeInPairs: false,
+    dynamicIntensity: false,
+    competitiveMode: false,
+    partyMode: false
+  });
   const [timerActive, setTimerActive] = useState(false);
   
-  // Estado para alternar entre mostrar tipo ou desafio
-  const [showingType, setShowingType] = useState(true);
-  // Estado para armazenar o tipo atual (pergunta ou desafio)
-  const [currentType, setCurrentType] = useState<"pergunta" | "desafio">("pergunta");
+  // Estado para indicar se estamos em modo roleta (selecionando tipo)
+  const [rouletteMode, setRouletteMode] = useState(true);
   // Estado para armazenar o desafio atual
   const [currentChallenge, setCurrentChallenge] = useState<GameChallenge | null>(null);
+  // Estado para armazenar se a roleta está girando
+  const [isSpinning, setIsSpinning] = useState(false);
+  // Estado para armazenar o tipo de conteúdo selecionado
+  const [selectedContentType, setSelectedContentType] = useState<ChallengeType>("desafio");
+  // Pares de jogadores quando necessário
+  const [pairPlayerIndices, setPairPlayerIndices] = useState<number[]>([]);
   
   // Usar a categoria correspondente ou padrão "suave"
   const category = categoryId as CategoryType || "suave";
   
-  // Carregar jogadores da sessionStorage
+  // Configuração da roleta de tipos de conteúdo
+  const rouletteItems: RouletteItem[] = [
+    { 
+      type: "pergunta", 
+      icon: HelpCircle, 
+      label: "Pergunta", 
+      color: "bg-blue-500", 
+      bgClass: "from-blue-500 to-blue-700"
+    },
+    { 
+      type: "desafio", 
+      icon: Flame, 
+      label: "Desafio", 
+      color: "bg-red-500", 
+      bgClass: "from-red-500 to-red-700"
+    },
+    { 
+      type: "prêmio", 
+      icon: Gift, 
+      label: "Prêmio", 
+      color: "bg-green-500", 
+      bgClass: "from-green-500 to-green-700"
+    },
+    { 
+      type: "penalidade", 
+      icon: AlertTriangle, 
+      label: "Penalidade", 
+      color: "bg-yellow-500", 
+      bgClass: "from-yellow-500 to-yellow-700"
+    }
+  ];
+  
+  // Carregar jogadores e opções do jogo da sessionStorage
   useEffect(() => {
     const storedPlayers = sessionStorage.getItem("players");
     const storedOptions = sessionStorage.getItem("gameOptions");
@@ -50,8 +102,8 @@ export default function GameplayPage() {
       setGameOptions(JSON.parse(storedOptions));
     }
     
-    // Inicializa o jogo com um tipo aleatório
-    startNewRound();
+    // Inicializar o modo roleta
+    setRouletteMode(true);
   }, [navigate]);
   
   // Função para formatar o tempo do timer
@@ -71,13 +123,13 @@ export default function GameplayPage() {
     
     if (!durationString) return;
     
-    // Extrai o tempo da string de duração (formato: "X min" ou "Y seg")
+    // Extrai o tempo da string de duração (formato: "Xmin" ou "Ys")
     let seconds = 0;
     if (durationString.includes("min")) {
-      const mins = parseInt(durationString.split(" ")[0]);
+      const mins = parseInt(durationString.split("min")[0]);
       seconds = mins * 60;
-    } else if (durationString.includes("seg")) {
-      seconds = parseInt(durationString.split(" ")[0]);
+    } else if (durationString.includes("s")) {
+      seconds = parseInt(durationString.split("s")[0]);
     }
     
     if (seconds > 0) {
@@ -110,30 +162,113 @@ export default function GameplayPage() {
     return () => clearInterval(interval);
   }, [timerActive, timer, toast]);
   
-  // Escolher um tipo aleatório entre pergunta e desafio
-  const getRandomType = (): "pergunta" | "desafio" => {
-    return Math.random() < 0.5 ? "pergunta" : "desafio";
+  // Calcular a intensidade dinâmica com base na rodada atual
+  const getCurrentIntensity = useCallback((): CategoryType => {
+    if (!gameOptions.dynamicIntensity) return category;
+
+    // A intensidade aumenta a cada 3 rodadas
+    const intensityLevels: CategoryType[] = ['suave', 'picante', 'selvagem', 'extremo'];
+    const currentIntensityIndex = intensityLevels.indexOf(category);
+    const roundFactor = Math.floor((completedChallenges) / 3);
+    const newIntensityIndex = Math.min(currentIntensityIndex + roundFactor, intensityLevels.length - 1);
+
+    return intensityLevels[newIntensityIndex];
+  }, [category, completedChallenges, gameOptions.dynamicIntensity]);
+  
+  // Selecionar aleatoriamente um parceiro para desafios em pares
+  const selectRandomPair = useCallback(() => {
+    if (players.length < 2) return;
+    
+    const currentIdx = currentPlayerIndex;
+    let otherPlayerIndices = Array.from({length: players.length}, (_, i) => i).filter(i => i !== currentIdx);
+
+    // Embaralhar para escolher aleatoriamente
+    otherPlayerIndices.sort(() => Math.random() - 0.5);
+
+    // Selecionar o primeiro jogador diferente
+    setPairPlayerIndices([currentIdx, otherPlayerIndices[0]]);
+  }, [currentPlayerIndex, players.length]);
+
+  // Preparar novo desafio
+  const prepareNewChallenge = useCallback(() => {
+    const currentIntensity = getCurrentIntensity();
+    
+    // Selecionar um desafio aleatório da categoria e tipo selecionado
+    const newChallenge = getRandomExpandedChallenge(currentIntensity, selectedContentType);
+    
+    // Se for um desafio em pares, selecionar os jogadores
+    if (gameOptions.challengeInPairs && players.length >= 2) {
+      selectRandomPair();
+    }
+    
+    // Estabelecer o desafio atual
+    setCurrentChallenge(newChallenge);
+    
+    // Desativar modo roleta
+    setRouletteMode(false);
+    
+    // Resetar estado da roleta
+    setIsSpinning(false);
+  }, [selectedContentType, getCurrentIntensity, gameOptions.challengeInPairs, players.length, selectRandomPair]);
+  
+  // Função para girar a roleta e selecionar um tipo
+  const handleSpinRoulette = () => {
+    if (isSpinning) return;
+    
+    setIsSpinning(true);
+    
+    // Simular a roleta girando
+    const spinDuration = 2000; // 2 segundos
+    const intervalTime = 100; // Mudar a cada 100ms para efeito visual
+    
+    let counter = 0;
+    const maxCycles = spinDuration / intervalTime;
+    
+    const interval = setInterval(() => {
+      counter++;
+      // Mudar o tipo de conteúdo para simular a roleta girando
+      const randomIndex = Math.floor(Math.random() * rouletteItems.length);
+      setSelectedContentType(rouletteItems[randomIndex].type);
+      
+      // Parar após um tempo definido
+      if (counter >= maxCycles) {
+        clearInterval(interval);
+        
+        // Selecionar um resultado final aleatório
+        const finalIndex = Math.floor(Math.random() * rouletteItems.length);
+        const finalType = rouletteItems[finalIndex].type;
+        setSelectedContentType(finalType);
+        
+        setTimeout(() => {
+          setIsSpinning(false);
+          // Preparar desafio após a roleta parar
+          if (!gameOptions.partyMode) {
+            prepareNewChallenge();
+          }
+        }, 500);
+      }
+    }, intervalTime);
   };
   
-  // Iniciar uma nova rodada
-  const startNewRound = () => {
-    // Seleciona aleatoriamente entre pergunta ou desafio
-    const newType = getRandomType();
-    setCurrentType(newType);
+  // Selecionar diretamente um tipo da roleta
+  const handleRouletteSelect = (contentType: ChallengeType) => {
+    setSelectedContentType(contentType);
     
-    // Mostrar o tipo selecionado
-    setShowingType(true);
-    
-    // Após 1.5 segundo, mostrar o desafio
-    setTimeout(() => {
-      // Seleciona um desafio aleatório depois que o tipo for mostrado
-      const randomChallenge = getRandomExpandedChallenge(category, newType);
-      // Armazena o desafio selecionado no estado
-      setCurrentChallenge(randomChallenge);
-      setShowingType(false);
-    }, 1500);
+    // Se estiver no modo festa, manter a roleta ativa
+    if (!gameOptions.partyMode) {
+      setRouletteMode(false);
+      // Preparar desafio
+      prepareNewChallenge();
+    }
   };
   
+  // Obter nomes de jogadores para desafio em pares
+  const getPairPlayerNames = (): string[] => {
+    if (pairPlayerIndices.length !== 2) return [players[currentPlayerIndex]];
+    return pairPlayerIndices.map(index => players[index]);
+  };
+  
+  // Lidar com o desafio concluído
   const handleCompleteChallenge = () => {
     // Parar o timer se estiver ativo
     if (timerActive) {
@@ -145,17 +280,31 @@ export default function GameplayPage() {
     setCompletedChallenges(prev => prev + 1);
     
     // Avançar para o próximo jogador
-    setCurrentPlayerIndex(prev => (prev + 1) % players.length);
+    const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    setCurrentPlayerIndex(nextPlayerIndex);
     
-    // Iniciar nova rodada
-    startNewRound();
-    
-    toast({
-      title: "Desafio concluído!",
-      description: "Agora é a vez de " + players[(currentPlayerIndex + 1) % players.length]
-    });
+    // Verificar se deve repetir o mesmo jogador (caso seja um prêmio)
+    if (selectedContentType === 'prêmio') {
+      toast({
+        title: "Prêmio concluído!",
+        description: `${players[currentPlayerIndex]}, você ganhou mais um turno!`
+      });
+      
+      // Voltar para a roleta para o mesmo jogador
+      setRouletteMode(true);
+    } else {
+      // Mostrar toast de conclusão
+      toast({
+        title: "Desafio concluído!",
+        description: "Agora é a vez de " + players[nextPlayerIndex]
+      });
+      
+      // Voltar para o modo roleta
+      setRouletteMode(true);
+    }
   };
   
+  // Lidar com pular desafio
   const handleSkipChallenge = () => {
     // Parar o timer se estiver ativo
     if (timerActive) {
@@ -163,37 +312,51 @@ export default function GameplayPage() {
       setTimer(null);
     }
     
-    // Avançar para o próximo jogador
-    setCurrentPlayerIndex(prev => (prev + 1) % players.length);
-    
-    // Iniciar nova rodada
-    startNewRound();
-    
-    toast({
-      title: "Desafio pulado",
-      description: "Agora é a vez de " + players[(currentPlayerIndex + 1) % players.length]
-    });
+    // Se estiver em modo competitivo, aplicar uma penalidade
+    if (gameOptions.competitiveMode) {
+      setSelectedContentType('penalidade');
+      prepareNewChallenge();
+      
+      toast({
+        title: "Desafio pulado!",
+        description: "Você receberá uma penalidade.",
+        variant: "destructive"
+      });
+    } else {
+      // Avançar para o próximo jogador
+      const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
+      setCurrentPlayerIndex(nextPlayerIndex);
+      
+      // Mostrar toast de desafio pulado
+      toast({
+        title: "Desafio pulado",
+        description: "Agora é a vez de " + players[nextPlayerIndex]
+      });
+      
+      // Voltar para o modo roleta
+      setRouletteMode(true);
+    }
   };
   
+  // Voltar para a página inicial
   const handleBackClick = () => {
     navigate('/home');
   };
   
-  // Obter desafios expandidos pelo tipo atual e categoria
-  const getExpandedChallengesByType = (categoryType: CategoryType, challengeType: "pergunta" | "desafio"): GameChallenge[] => {
-    // Usar a função de desafios expandidos que possui mais conteúdo
-    return getExpandedChallenges(categoryType, challengeType);
+  // Encontrar item da roleta pelo tipo
+  const getRouletteItemByType = (type: ChallengeType): RouletteItem => {
+    return rouletteItems.find(item => item.type === type) || rouletteItems[0];
   };
   
   // Obter desafios filtrados pelo tipo atual
-  const filteredChallenges = getExpandedChallengesByType(category, currentType);
+  const filteredChallenges = getExpandedChallenges(category, selectedContentType);
   
-  if (filteredChallenges.length === 0) {
+  if (filteredChallenges.length === 0 && !rouletteMode) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary to-primary-dark flex items-center justify-center">
         <div className="text-center text-white p-6">
-          <h2 className="text-2xl font-bold mb-4">Nenhum {currentType} encontrado</h2>
-          <p className="mb-6">Não conseguimos encontrar {currentType}s para esta categoria.</p>
+          <h2 className="text-2xl font-bold mb-4">Nenhum {selectedContentType} encontrado</h2>
+          <p className="mb-6">Não conseguimos encontrar {selectedContentType}s para esta categoria.</p>
           <Button 
             onClick={() => navigate('/home')}
             className="bg-white text-primary hover:bg-white/90"
@@ -206,7 +369,6 @@ export default function GameplayPage() {
   }
   
   const currentPlayer = players[currentPlayerIndex] || "Jogador";
-  const totalChallenges = filteredChallenges.length;
   const progress = Math.round((completedChallenges / 20) * 100); // Limitando a 20 desafios para barra de progresso
   
   return (
@@ -261,7 +423,7 @@ export default function GameplayPage() {
               </h2>
               <div className="flex items-center mt-1">
                 <span className="text-xs px-2 py-0.5 bg-white/20 text-white rounded-full">
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                  {getCurrentIntensity().charAt(0).toUpperCase() + getCurrentIntensity().slice(1)}
                 </span>
               </div>
             </div>
@@ -302,9 +464,9 @@ export default function GameplayPage() {
         </motion.div>
       </div>
       
-      {/* Type Indicator or Current Challenge */}
+      {/* Roulette Mode or Current Challenge */}
       <div className="px-4 pt-4 pb-20">
-        {showingType ? (
+        {rouletteMode ? (
           <motion.div 
             className="py-4"
             variants={slideFromRight}
@@ -313,19 +475,66 @@ export default function GameplayPage() {
           >
             <div className="text-center text-white mb-6">
               <h2 className="text-2xl font-bold">
-                {currentType === "pergunta" ? "Pergunta" : "Desafio"}
+                Escolha o seu destino
               </h2>
               <p className="text-white/80">É a vez de {currentPlayer}</p>
             </div>
             
-            <div className="flex justify-center">
-              {currentType === "pergunta" ? (
-                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-blue-500/80 to-blue-700/80 flex items-center justify-center">
-                  <HelpCircle className="h-16 w-16 text-white" />
+            {/* Roulette Wheel */}
+            <div className="flex flex-col items-center">
+              <div className="relative mb-8">
+                <div className="w-48 h-48 rounded-full border-4 border-white/30 bg-gradient-to-br from-primary/50 to-primary-dark/50 flex items-center justify-center relative overflow-hidden">
+                  {/* Spinning Indicator */}
+                  {isSpinning && (
+                    <div className="absolute inset-0 flex items-center justify-center animate-spin">
+                      <RotateCcw className="h-12 w-12 text-white/50" />
+                    </div>
+                  )}
+                  
+                  {/* Content Type Display */}
+                  <div className={`w-40 h-40 rounded-full ${getRouletteItemByType(selectedContentType).bgClass} bg-gradient-to-br flex items-center justify-center transition-all duration-300 ${isSpinning ? 'scale-90 opacity-90' : 'scale-100 opacity-100'}`}>
+                    <div className="text-center">
+                      {React.createElement(getRouletteItemByType(selectedContentType).icon, {
+                        className: "h-12 w-12 text-white mx-auto mb-2"
+                      })}
+                      <span className="block text-lg font-bold text-white">
+                        {getRouletteItemByType(selectedContentType).label}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-orange-500/80 to-orange-700/80 flex items-center justify-center">
-                  <Flame className="h-16 w-16 text-white" />
+                
+                {/* Spin Button */}
+                <button 
+                  onClick={handleSpinRoulette}
+                  disabled={isSpinning}
+                  className={`absolute left-1/2 -translate-x-1/2 -top-5 px-4 py-2 rounded-full text-white font-medium ${isSpinning ? 'bg-gray-500/80' : 'bg-primary hover:bg-primary/90'} transition-colors`}
+                >
+                  Girar
+                </button>
+              </div>
+              
+              {/* Quick Selection Buttons */}
+              <div className="grid grid-cols-2 gap-3 w-full max-w-md mt-4">
+                {rouletteItems.map((item) => (
+                  <button
+                    key={item.type}
+                    onClick={() => handleRouletteSelect(item.type)}
+                    disabled={isSpinning}
+                    className={`py-3 px-4 rounded-xl flex items-center justify-center bg-gradient-to-br ${item.bgClass} text-white font-medium ${isSpinning ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg'} transition-all`}
+                  >
+                    {React.createElement(item.icon, { className: "h-5 w-5 mr-2" })}
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Selected Content Info */}
+              {!isSpinning && (
+                <div className="mt-8 text-center">
+                  <p className="text-white text-sm">
+                    Clique em "Girar" para deixar o destino decidir ou selecione diretamente um tipo de conteúdo.
+                  </p>
                 </div>
               )}
             </div>
@@ -342,10 +551,14 @@ export default function GameplayPage() {
                   challenge={currentChallenge}
                   onComplete={handleCompleteChallenge}
                   onSkip={handleSkipChallenge}
-                  playerNames={[currentPlayer, players[(currentPlayerIndex + 1) % players.length]]}
+                  playerNames={getPairPlayerNames()}
+                  forbiddenEnabled={true}
+                  pairMode={gameOptions.challengeInPairs}
+                  showReward={selectedContentType === "prêmio"}
+                  competitiveMode={gameOptions.competitiveMode}
                 />
                 
-                {!timerActive && currentChallenge.duration && (
+                {!timerActive && currentChallenge.duration && gameOptions.timer && (
                   <div className="flex justify-center mt-4">
                     <Button
                       variant="outline" 

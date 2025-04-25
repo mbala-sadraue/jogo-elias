@@ -12,6 +12,10 @@ export interface GameChallenge {
   duration: string;
   index?: number;
   category: CategoryType;
+  forbiddenText?: string; // Versão proibida/alternativa do texto
+  isReward?: boolean; // Indica se é um prêmio especial
+  requiresPair?: boolean; // Indica se requer um par de jogadores
+  hasForbiddenVersion?: boolean; // Indica se tem versão proibida
 }
 
 // ----- DESAFIOS SUAVES -----
