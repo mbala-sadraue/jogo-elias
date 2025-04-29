@@ -43,7 +43,7 @@ export default function GameplayPage() {
     partyMode: false
   });
   const [timerActive, setTimerActive] = useState(false);
-  
+
   // Estado para indicar se estamos em modo roleta (selecionando tipo)
   const [rouletteMode, setRouletteMode] = useState(true);
   // Estado para armazenar o desafio atual
@@ -54,10 +54,10 @@ export default function GameplayPage() {
   const [selectedContentType, setSelectedContentType] = useState<ChallengeType>("desafio");
   // Pares de jogadores quando necessário
   const [pairPlayerIndices, setPairPlayerIndices] = useState<number[]>([]);
-  
+
   // Usar a categoria correspondente ou padrão "suave"
   const category = categoryId as CategoryType || "suave";
-  
+
   // Configuração da roleta de tipos de conteúdo
   const rouletteItems: RouletteItem[] = [
     { 
@@ -89,34 +89,34 @@ export default function GameplayPage() {
       bgClass: "from-yellow-500 to-yellow-700"
     }
   ];
-  
+
   // Carregar jogadores e opções do jogo da sessionStorage
   useEffect(() => {
     const storedPlayers = sessionStorage.getItem("players");
     const storedOptions = sessionStorage.getItem("gameOptions");
-    
+
     if (storedPlayers) {
       setPlayers(JSON.parse(storedPlayers));
     } else {
       navigate("/");
       return;
     }
-    
+
     if (storedOptions) {
       setGameOptions(JSON.parse(storedOptions));
     }
-    
+
     // Inicializar o modo roleta
     setRouletteMode(true);
   }, [navigate]);
-  
+
   // Função para formatar o tempo do timer
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
-  
+
   // Iniciar ou parar o timer
   const toggleTimer = (durationString?: string) => {
     if (timerActive) {
@@ -124,9 +124,9 @@ export default function GameplayPage() {
       setTimer(null);
       return;
     }
-    
+
     if (!durationString) return;
-    
+
     // Extrai o tempo da string de duração (formato: "Xmin" ou "Ys")
     let seconds = 0;
     if (durationString.includes("min")) {
@@ -135,17 +135,17 @@ export default function GameplayPage() {
     } else if (durationString.includes("s")) {
       seconds = parseInt(durationString.split("s")[0]);
     }
-    
+
     if (seconds > 0) {
       setTimer(seconds);
       setTimerActive(true);
     }
   };
-  
+
   // Efeito para contar o timer
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    
+
     if (timerActive && timer !== null && timer > 0) {
       interval = setInterval(() => {
         setTimer(prev => {
@@ -162,10 +162,10 @@ export default function GameplayPage() {
         });
       }, 1000);
     }
-    
+
     return () => clearInterval(interval);
   }, [timerActive, timer, toast]);
-  
+
   // Calcular a intensidade dinâmica com base na rodada atual
   const getCurrentIntensity = useCallback((): CategoryType => {
     if (!gameOptions.dynamicIntensity) return category;
@@ -178,11 +178,11 @@ export default function GameplayPage() {
 
     return intensityLevels[newIntensityIndex];
   }, [category, completedChallenges, gameOptions.dynamicIntensity]);
-  
+
   // Selecionar aleatoriamente um parceiro para desafios em pares
   const selectRandomPair = useCallback(() => {
     if (players.length < 2) return;
-    
+
     const currentIdx = currentPlayerIndex;
     let otherPlayerIndices = Array.from({length: players.length}, (_, i) => i).filter(i => i !== currentIdx);
 
@@ -196,53 +196,53 @@ export default function GameplayPage() {
   // Preparar novo desafio
   const prepareNewChallenge = useCallback(() => {
     const currentIntensity = getCurrentIntensity();
-    
+
     // Selecionar um desafio aleatório da categoria e tipo selecionado
     const newChallenge = getRandomExpandedChallenge(currentIntensity, selectedContentType);
-    
+
     // Se for um desafio em pares, selecionar os jogadores
     if (gameOptions.challengeInPairs && players.length >= 2) {
       selectRandomPair();
     }
-    
+
     // Estabelecer o desafio atual
     setCurrentChallenge(newChallenge);
-    
+
     // Desativar modo roleta
     setRouletteMode(false);
-    
+
     // Resetar estado da roleta
     setIsSpinning(false);
   }, [selectedContentType, getCurrentIntensity, gameOptions.challengeInPairs, players.length, selectRandomPair]);
-  
+
   // Função para girar a roleta e selecionar um tipo
   const handleSpinRoulette = () => {
     if (isSpinning) return;
-    
+
     setIsSpinning(true);
-    
+
     // Simular a roleta girando
     const spinDuration = 2000; // 2 segundos
     const intervalTime = 100; // Mudar a cada 100ms para efeito visual
-    
+
     let counter = 0;
     const maxCycles = spinDuration / intervalTime;
-    
+
     const interval = setInterval(() => {
       counter++;
       // Mudar o tipo de conteúdo para simular a roleta girando
       const randomIndex = Math.floor(Math.random() * rouletteItems.length);
       setSelectedContentType(rouletteItems[randomIndex].type);
-      
+
       // Parar após um tempo definido
       if (counter >= maxCycles) {
         clearInterval(interval);
-        
+
         // Selecionar um resultado final aleatório
         const finalIndex = Math.floor(Math.random() * rouletteItems.length);
         const finalType = rouletteItems[finalIndex].type;
         setSelectedContentType(finalType);
-        
+
         setTimeout(() => {
           setIsSpinning(false);
           // Preparar desafio após a roleta parar
@@ -253,11 +253,11 @@ export default function GameplayPage() {
       }
     }, intervalTime);
   };
-  
+
   // Selecionar diretamente um tipo da roleta
   const handleRouletteSelect = (contentType: ChallengeType) => {
     setSelectedContentType(contentType);
-    
+
     // Se estiver no modo festa, manter a roleta ativa
     if (!gameOptions.partyMode) {
       setRouletteMode(false);
@@ -265,13 +265,13 @@ export default function GameplayPage() {
       prepareNewChallenge();
     }
   };
-  
+
   // Obter nomes de jogadores para desafio em pares
   const getPairPlayerNames = (): string[] => {
     if (pairPlayerIndices.length !== 2) return [players[currentPlayerIndex]];
     return pairPlayerIndices.map(index => players[index]);
   };
-  
+
   // Lidar com o desafio concluído
   const handleCompleteChallenge = () => {
     // Parar o timer se estiver ativo
@@ -279,21 +279,21 @@ export default function GameplayPage() {
       setTimerActive(false);
       setTimer(null);
     }
-    
+
     // Incrementar o contador de desafios completados
     setCompletedChallenges(prev => prev + 1);
-    
+
     // Avançar para o próximo jogador
     const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
     setCurrentPlayerIndex(nextPlayerIndex);
-    
+
     // Verificar se deve repetir o mesmo jogador (caso seja um prêmio)
     if (selectedContentType === 'prêmio') {
       toast({
         title: "Prêmio concluído!",
         description: `${players[currentPlayerIndex]}, você ganhou mais um turno!`
       });
-      
+
       // Voltar para a roleta para o mesmo jogador
       setRouletteMode(true);
     } else {
@@ -302,12 +302,12 @@ export default function GameplayPage() {
         title: "Desafio concluído!",
         description: "Agora é a vez de " + players[nextPlayerIndex]
       });
-      
+
       // Voltar para o modo roleta
       setRouletteMode(true);
     }
   };
-  
+
   // Lidar com pular desafio
   const handleSkipChallenge = () => {
     // Parar o timer se estiver ativo
@@ -315,12 +315,12 @@ export default function GameplayPage() {
       setTimerActive(false);
       setTimer(null);
     }
-    
+
     // Se estiver em modo competitivo, aplicar uma penalidade
     if (gameOptions.competitiveMode) {
       setSelectedContentType('penalidade');
       prepareNewChallenge();
-      
+
       toast({
         title: "Desafio pulado!",
         description: "Você receberá uma penalidade.",
@@ -330,31 +330,31 @@ export default function GameplayPage() {
       // Avançar para o próximo jogador
       const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
       setCurrentPlayerIndex(nextPlayerIndex);
-      
+
       // Mostrar toast de desafio pulado
       toast({
         title: "Desafio pulado",
         description: "Agora é a vez de " + players[nextPlayerIndex]
       });
-      
+
       // Voltar para o modo roleta
       setRouletteMode(true);
     }
   };
-  
+
   // Voltar para a página inicial
   const handleBackClick = () => {
     navigate('/home');
   };
-  
+
   // Encontrar item da roleta pelo tipo
   const getRouletteItemByType = (type: ChallengeType): RouletteItem => {
     return rouletteItems.find(item => item.type === type) || rouletteItems[0];
   };
-  
+
   // Obter desafios filtrados pelo tipo atual
   const filteredChallenges = getExpandedChallenges(category, selectedContentType);
-  
+
   // Display all challenges and questions for the current category
   const showAllChallenges = () => {
     return (
@@ -393,10 +393,10 @@ export default function GameplayPage() {
       </div>
     );
   }
-  
+
   const currentPlayer = players[currentPlayerIndex] || "Jogador";
   const progress = Math.round((completedChallenges / 20) * 100); // Limitando a 20 desafios para barra de progresso
-  
+
   return (
     <motion.div
       className={`min-h-screen bg-gradient-${category}`}
@@ -409,7 +409,7 @@ export default function GameplayPage() {
       <div className="text-center text-white text-xs p-2 bg-black/20">
         © 2024 Elias Londa Francisco Salomão. Todos os direitos reservados.
       </div>
-      
+
       {/* Game Header */}
       <div className="relative">
         <motion.div 
@@ -425,7 +425,7 @@ export default function GameplayPage() {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            
+
             <div className="flex items-center space-x-2">
               {timerActive && timer !== null ? (
                 <div className="px-3 py-1 bg-white/20 rounded-full text-white flex items-center">
@@ -440,7 +440,7 @@ export default function GameplayPage() {
               )}
             </div>
           </div>
-          
+
           {/* Jogador atual */}
           <div className="mt-4 flex items-center justify-center">
             <div className="flex flex-col items-center mb-2">
@@ -459,7 +459,7 @@ export default function GameplayPage() {
               </div>
             </div>
           </div>
-          
+
           {/* Players */}
           {players.length > 1 && (
             <div className="mt-3 flex justify-center -space-x-2 overflow-hidden">
@@ -477,7 +477,7 @@ export default function GameplayPage() {
               ))}
             </div>
           )}
-          
+
           {/* Progress bar */}
           <div className="mt-4 relative px-2">
             <div className="flex items-center justify-between mb-1">
@@ -494,7 +494,7 @@ export default function GameplayPage() {
           </div>
         </motion.div>
       </div>
-      
+
       {/* Roulette Mode or Current Challenge */}
       <div className="px-4 pt-4 pb-20">
         {rouletteMode ? (
@@ -510,7 +510,7 @@ export default function GameplayPage() {
               </h2>
               <p className="text-white/80">É a vez de {currentPlayer}</p>
             </div>
-            
+
             {/* Sensual Roulette Component */}
             <SensualRoulette
               intensity={getCurrentIntensity()}
@@ -553,8 +553,7 @@ export default function GameplayPage() {
                 </Dialog>
               </div>
 
-              {currentChallenge && (
-              <>
+              {currentChallenge || selectedContentType ? (
                 <ChallengeCard
                   challenge={currentChallenge}
                   onComplete={handleCompleteChallenge}
@@ -565,38 +564,37 @@ export default function GameplayPage() {
                   showReward={selectedContentType === "prêmio"}
                   competitiveMode={gameOptions.competitiveMode}
                 />
-                
-                {!timerActive && currentChallenge.duration && gameOptions.timer && (
-                  <div className="flex justify-center mt-4">
-                    <Button
-                      variant="outline" 
-                      onClick={() => toggleTimer(currentChallenge.duration)}
-                      className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                    >
-                      <Timer className="h-4 w-4 mr-2" />
-                      Iniciar timer ({currentChallenge.duration})
-                    </Button>
-                  </div>
-                )}
-                
-                {timerActive && (
-                  <div className="flex justify-center mt-4">
-                    <Button
-                      variant="outline" 
-                      onClick={() => toggleTimer()}
-                      className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                    >
-                      <Timer className="h-4 w-4 mr-2" />
-                      Parar timer
-                    </Button>
-                  </div>
-                )}
-              </>
-            )}
+              ) : null}
+
+              {!timerActive && currentChallenge?.duration && gameOptions.timer && (
+                <div className="flex justify-center mt-4">
+                  <Button
+                    variant="outline" 
+                    onClick={() => toggleTimer(currentChallenge?.duration)}
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                  >
+                    <Timer className="h-4 w-4 mr-2" />
+                    Iniciar timer ({currentChallenge?.duration})
+                  </Button>
+                </div>
+              )}
+
+              {timerActive && (
+                <div className="flex justify-center mt-4">
+                  <Button
+                    variant="outline" 
+                    onClick={() => toggleTimer()}
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                  >
+                    <Timer className="h-4 w-4 mr-2" />
+                    Parar timer
+                  </Button>
+                </div>
+              )}
           </motion.div>
         )}
       </div>
-      
+
       {/* Memory Album Button */}
       <div className="fixed left-3 bottom-28 md:left-5 md:bottom-36">
         <Button 
@@ -626,7 +624,7 @@ export default function GameplayPage() {
           <BookOpen className="h-5 w-5 md:h-6 md:w-6" />
         </Button>
       </div>
-      
+
       {/* Music Player Component */}
       <MusicPlayer 
         isEnabled={true} 
