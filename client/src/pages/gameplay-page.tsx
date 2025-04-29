@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useLocation, useParams } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowLeft, Timer, Trophy, HelpCircle, Flame, Gift, AlertTriangle, RotateCcw, BookOpen, Music } from "lucide-react";
@@ -354,6 +355,28 @@ export default function GameplayPage() {
   // Obter desafios filtrados pelo tipo atual
   const filteredChallenges = getExpandedChallenges(category, selectedContentType);
   
+  // Display all challenges and questions for the current category
+  const showAllChallenges = () => {
+    return (
+      <div className="mt-4 space-y-4">
+        <h3 className="text-white text-xl font-bold text-center">Todos os {selectedContentType}s</h3>
+        <div className="grid gap-4">
+          {filteredChallenges.map((challenge, index) => (
+            <div key={challenge.id} className="bg-white/10 p-4 rounded-lg">
+              <h4 className="text-white font-semibold">#{index + 1} - {challenge.title}</h4>
+              <p className="text-white/80 mt-2">{challenge.description}</p>
+              {challenge.duration && (
+                <span className="text-xs text-white/60 mt-1 block">
+                  Duração: {challenge.duration}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   if (filteredChallenges.length === 0 && !rouletteMode) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary to-primary-dark flex items-center justify-center">
@@ -382,6 +405,11 @@ export default function GameplayPage() {
       exit="exit"
       variants={fadeIn}
     >
+      {/* Copyright */}
+      <div className="text-center text-white text-xs p-2 bg-black/20">
+        © 2024 Elias Londa Francisco Salomão. Todos os direitos reservados.
+      </div>
+      
       {/* Game Header */}
       <div className="relative">
         <motion.div 
@@ -498,7 +526,34 @@ export default function GameplayPage() {
             variants={slideFromRight}
             key={currentChallenge?.id || "no-challenge"}
           >
-            {currentChallenge && (
+            <div className="mb-4">
+                <Button
+                  onClick={() => setRouletteMode(true)}
+                  className="w-full bg-white/20 hover:bg-white/30 text-white"
+                >
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Voltar para Roleta
+                </Button>
+              </div>
+
+              {/* Show all challenges button */}
+              <div className="mb-4">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      className="w-full bg-primary/20 hover:bg-primary/30 text-white"
+                    >
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      Ver Todos os {selectedContentType}s
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                    {showAllChallenges()}
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              {currentChallenge && (
               <>
                 <ChallengeCard
                   challenge={currentChallenge}
