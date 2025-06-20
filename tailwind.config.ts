@@ -5,10 +5,6 @@ export default {
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
-      fontFamily: {
-        inter: ["Inter", "sans-serif"],
-        poppins: ["Poppins", "sans-serif"],
-      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -83,10 +79,30 @@ export default {
             height: "0",
           },
         },
+        "pulse-light": {
+          "0%, 100%": {
+            opacity: "1",
+            boxShadow: "0 0 15px rgba(236, 72, 153, 0.5), 0 0 30px rgba(168, 85, 247, 0.3)",
+          },
+          "50%": {
+            opacity: "0.9",
+            boxShadow: "0 0 25px rgba(236, 72, 153, 0.7), 0 0 50px rgba(168, 85, 247, 0.5)",
+          },
+        },
+        "rotate-slow": {
+          "0%": {
+            transform: "rotate(0deg)",
+          },
+          "100%": {
+            transform: "rotate(360deg)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "pulse-light": "pulse-light 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "rotate-slow": "rotate-slow 8s linear infinite",
       },
     },
   },

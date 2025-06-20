@@ -1,359 +1,621 @@
+@keyframes spin-fast {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-fast {
+  animation: spin-fast 1s linear infinite;
+}
+
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 240 20% 8%;
-    --foreground: 0 0% 98%;
-    
-    --card: 240 20% 10%;
-    --card-foreground: 0 0% 98%;
-    
-    --popover: 240 20% 10%;
-    --popover-foreground: 0 0% 98%;
-    
-    /* Tema principal: Roxo escuro e sensual */
-    --primary: 280 80% 40%;
-    --primary-foreground: 0 0% 98%;
-    --primary-light: 280 80% 50%;
-    --primary-dark: 280 80% 25%;
-    
-    /* Cor de destaque: Vermelho-púrpura intenso */
-    --secondary: 330 85% 45%;
-    --secondary-foreground: 0 0% 98%;
-    --secondary-light: 330 85% 55%;
-    --secondary-dark: 330 85% 35%;
-    
-    --muted: 240 10% 15%;
-    --muted-foreground: 240 5% 65%;
-    
-    --accent: 250 80% 50%;
-    --accent-foreground: 0 0% 98%;
-    
-    --destructive: 0 80% 50%;
-    --destructive-foreground: 0 0% 98%;
-    
-    --border: 240 10% 20%;
-    --input: 240 10% 20%;
-    --ring: 280 80% 40%;
-    
-    --chart-1: 280 80% 45%;
-    --chart-2: 330 85% 50%;
-    --chart-3: 210 80% 50%;
-    --chart-4: 25 90% 45%;
-    --chart-5: 0 80% 45%;
-    
-    --radius: 0.5rem;
-    
-    /* Game category colors - tons mais escuros e sensuais */
-    --suave: 210 80% 45%;
-    --suave-light: 210 80% 55%;
-    --suave-dark: 210 80% 35%;
-    
-    --picante: 25 85% 45%;
-    --picante-light: 25 85% 55%;
-    --picante-dark: 25 85% 35%;
-    
-    --selvagem: 0 80% 45%;
-    --selvagem-light: 0 80% 55%;
-    --selvagem-dark: 0 80% 35%;
-    
-    --extremo: 270 85% 40%;
-    --extremo-light: 270 85% 50%;
-    --extremo-dark: 270 85% 30%;
-    
-    --light: 0 0% 98%;
-    --dark: 240 20% 6%;
-    
-    /* Novas cores para modos de jogo */
-    --story-mode: 260 80% 40%;
-    --roleplay-mode: 300 80% 40%;
-    --roulette-mode: 340 80% 40%;
-    --mood-gauge: 180 80% 40%;
-    --secret-vault: 220 80% 40%;
-    --sync-challenge: 30 80% 40%;
+  /* Otimizações de Viewport para dispositivos móveis */
+  html, body {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    width: 100%;
+    height: 100%;
+    max-width: 100dvw;
+    max-height: 100dvh;
+    overscroll-behavior: contain;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-overflow-scrolling: touch;
+    user-select: none;
+    overflow: hidden;
+    position: fixed;
   }
-  
-  .dark {
-    --background: 240 25% 6%;
-    --foreground: 0 0% 98%;
-    
-    --card: 240 25% 8%;
-    --card-foreground: 0 0% 98%;
-    
-    --popover: 240 25% 8%;
-    --popover-foreground: 0 0% 98%;
-    
-    --primary: 280 75% 35%;
-    --primary-foreground: 0 0% 98%;
-    --primary-light: 280 75% 45%;
-    --primary-dark: 280 75% 25%;
-    
-    --secondary: 330 80% 40%;
-    --secondary-foreground: 0 0% 98%;
-    --secondary-light: 330 80% 50%;
-    --secondary-dark: 330 80% 30%;
-    
-    --muted: 240 15% 12%;
-    --muted-foreground: 240 10% 60%;
-    
-    --accent: 250 75% 45%;
-    --accent-foreground: 0 0% 98%;
-    
-    --destructive: 0 70% 40%;
-    --destructive-foreground: 0 85% 97%;
-    
-    --border: 240 15% 18%;
-    --input: 240 15% 18%;
-    --ring: 280 75% 35%;
-    
-    /* Categorias do jogo no modo escuro - intensos e sensuais */
-    --suave: 210 75% 45%;
-    --suave-light: 210 75% 55%;
-    --suave-dark: 210 75% 35%;
-    
-    --picante: 25 80% 45%;
-    --picante-light: 25 80% 55%;
-    --picante-dark: 25 80% 35%;
-    
-    --selvagem: 0 80% 45%;
-    --selvagem-light: 0 80% 55%;
-    --selvagem-dark: 0 80% 35%;
-    
-    --extremo: 270 80% 40%;
-    --extremo-light: 270 80% 50%;
-    --extremo-dark: 270 80% 30%;
-    
-    /* Novas cores para modos de jogo em dark mode */
-    --story-mode: 260 75% 35%;
-    --roleplay-mode: 300 75% 35%;
-    --roulette-mode: 340 75% 35%;
-    --mood-gauge: 180 75% 35%;
-    --secret-vault: 220 75% 35%;
-    --sync-challenge: 30 75% 35%;
-  }
-}
 
-@layer base {
+  #root {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    touch-action: pan-y;
+    overscroll-behavior-y: contain;
+    -webkit-user-drag: none;
+  }
+
+  * {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+  }
+
+  input, button, select, textarea {
+    font-size: 16px !important;
+    touch-action: manipulation;
+  }
+
+  * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  textarea, input {
+    -webkit-user-select: text;
+    user-select: text;
+  }
   * {
     @apply border-border;
   }
 
   body {
-    @apply font-inter antialiased bg-background text-foreground;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    overscroll-behavior: none;
+    @apply font-sans antialiased text-foreground font-montserrat;
+    background-color: hsl(var(--dark-900));
+    background-image: 
+      radial-gradient(at 10% 20%, hsla(271, 80%, 56%, 0.3) 0px, transparent 50%),
+      radial-gradient(at 90% 80%, hsla(326, 92%, 59%, 0.25) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, hsla(197, 97%, 67%, 0.1) 0px, transparent 70%);
+    background-attachment: fixed;
+    background-size: 120% 120%;
+    animation: gradient-animation 15s ease infinite;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-poppins;
+  @keyframes gradient-animation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  :root {
+    --background: 0 0% 7%;
+    --foreground: 0 0% 97%;
+    --card: 0 0% 17%;
+    --card-foreground: 0 0% 97%;
+    --popover: 0 0% 17%;
+    --popover-foreground: 0 0% 97%;
+    --primary: 271 80% 56%;
+    --primary-foreground: 0 0% 97%;
+    --secondary: 326 92% 59%;
+    --secondary-foreground: 0 0% 97%;
+    --muted: 0 0% 17%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 326 92% 59%;
+    --accent-foreground: 0 0% 97%;
+    --destructive: 0 84% 53%;
+    --destructive-foreground: 0 0% 97%;
+    --border: 0 0% 24%;
+    --input: 0 0% 24%;
+    --ring: 271 80% 56%;
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 97%;
+    --sidebar-primary: 271 80% 56%;
+    --sidebar-primary-foreground: 0 0% 97%;
+    --sidebar-accent: 326 92% 59%;
+    --sidebar-accent-foreground: 0 0% 97%;
+    --sidebar-border: 0 0% 24%;
+    --sidebar-ring: 271 80% 56%;
+    --chart-1: 271 80% 56%;
+    --chart-2: 326 92% 59%;
+    --chart-3: 0 84% 53%;
+    --chart-4: 197 97% 67%;
+    --chart-5: 36 89% 56%;
+    --radius: 0.5rem;
+
+    /* Custom game colors */
+    --dark-900: 0 0% 7%;
+    --dark-100: 0 0% 17%;
+    --light-100: 0 0% 97%;
+    --light-200: 0 0% 88%;
+    --intensity-suave: 197 100% 67%;
+    --intensity-picante: 36 94% 56%;
+    --intensity-selvagem: 326 92% 59%;
+    --intensity-extremo: 0 84% 53%;
   }
 }
 
 @layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  .font-montserrat {
+    font-family: 'Montserrat', sans-serif;
   }
-  
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+
+  .font-nunito {
+    font-family: 'Nunito', sans-serif;
   }
-  
-  /* Cores sólidas para categorias */
-  .bg-suave {
-    background-color: hsl(var(--suave));
+
+  .bg-dark-900 {
+    background-color: hsl(var(--dark-900));
   }
-  
-  .bg-picante {
-    background-color: hsl(var(--picante));
+
+  .bg-dark-100 {
+    background-color: hsl(var(--dark-100));
   }
-  
-  .bg-selvagem {
-    background-color: hsl(var(--selvagem));
+
+  .text-light-100 {
+    color: hsl(var(--light-100));
   }
-  
-  .bg-extremo {
-    background-color: hsl(var(--extremo));
+
+  .text-light-200 {
+    color: hsl(var(--light-200));
   }
-  
-  /* Gradientes para categorias - mais escuros e intensos */
-  .bg-gradient-suave {
-    @apply bg-gradient-to-br from-blue-600 to-blue-900;
+
+  .text-intensity-suave {
+    color: hsl(var(--intensity-suave));
   }
-  
-  .bg-gradient-picante {
-    @apply bg-gradient-to-br from-orange-600 to-orange-900;
+
+  .text-intensity-picante {
+    color: hsl(var(--intensity-picante));
   }
-  
-  .bg-gradient-selvagem {
-    @apply bg-gradient-to-br from-red-600 to-red-900;
+
+  .text-intensity-selvagem {
+    color: hsl(var(--intensity-selvagem));
   }
-  
-  .bg-gradient-extremo {
-    @apply bg-gradient-to-br from-purple-600 to-purple-900;
+
+  .text-intensity-extremo {
+    color: hsl(var(--intensity-extremo));
   }
-  
-  /* Gradientes para novos modos de jogo */
-  .bg-gradient-story {
-    @apply bg-gradient-to-br from-indigo-600 to-indigo-900;
+
+  .bg-intensity-suave {
+    background-color: hsl(var(--intensity-suave));
   }
-  
-  .bg-gradient-roleplay {
-    @apply bg-gradient-to-br from-fuchsia-600 to-fuchsia-900;
+
+  .bg-intensity-picante {
+    background-color: hsl(var(--intensity-picante));
   }
-  
-  .bg-gradient-roulette {
-    @apply bg-gradient-to-br from-rose-600 to-rose-900;
+
+  .bg-intensity-selvagem {
+    background-color: hsl(var(--intensity-selvagem));
   }
-  
-  .bg-gradient-mood {
-    @apply bg-gradient-to-br from-cyan-600 to-cyan-900;
+
+  .bg-intensity-extremo {
+    background-color: hsl(var(--intensity-extremo));
   }
-  
-  .bg-gradient-vault {
-    @apply bg-gradient-to-br from-sky-600 to-sky-900;
+
+  .border-intensity-suave {
+    border-color: hsl(var(--intensity-suave));
   }
-  
-  .bg-gradient-sync {
-    @apply bg-gradient-to-br from-amber-600 to-amber-900;
+
+  .border-intensity-picante {
+    border-color: hsl(var(--intensity-picante));
   }
-  
-  /* Cores de texto para categorias */
-  .text-suave {
-    color: hsl(var(--suave));
+
+  .border-intensity-selvagem {
+    border-color: hsl(var(--intensity-selvagem));
   }
-  
-  .text-picante {
-    color: hsl(var(--picante));
+
+  .border-intensity-extremo {
+    border-color: hsl(var(--intensity-extremo));
   }
-  
-  .text-selvagem {
-    color: hsl(var(--selvagem));
+
+  .bg-intensity-suave\/20 {
+    background-color: hsl(var(--intensity-suave) / 0.2);
   }
-  
-  .text-extremo {
-    color: hsl(var(--extremo));
+
+  .bg-intensity-picante\/20 {
+    background-color: hsl(var(--intensity-picante) / 0.2);
   }
-  
-  /* Cores com transparência */
-  .bg-suave\/20 {
-    background-color: hsl(var(--suave) / 0.2);
+
+  .bg-intensity-selvagem\/20 {
+    background-color: hsl(var(--intensity-selvagem) / 0.2);
   }
-  
-  .bg-picante\/20 {
-    background-color: hsl(var(--picante) / 0.2);
+
+  .bg-intensity-extremo\/20 {
+    background-color: hsl(var(--intensity-extremo) / 0.2);
   }
-  
-  .bg-selvagem\/20 {
-    background-color: hsl(var(--selvagem) / 0.2);
+
+  .hover\:bg-intensity-suave\/20:hover {
+    background-color: hsl(var(--intensity-suave) / 0.2);
   }
-  
-  .bg-extremo\/20 {
-    background-color: hsl(var(--extremo) / 0.2);
+
+  .hover\:bg-intensity-picante\/20:hover {
+    background-color: hsl(var(--intensity-picante) / 0.2);
   }
-  
-  /* Cores de bordas */
-  .border-suave {
-    border-color: hsl(var(--suave));
+
+  .hover\:bg-intensity-selvagem\/20:hover {
+    background-color: hsl(var(--intensity-selvagem) / 0.2);
   }
-  
-  .border-picante {
-    border-color: hsl(var(--picante));
+
+  .hover\:bg-intensity-extremo\/20:hover {
+    background-color: hsl(var(--intensity-extremo) / 0.2);
   }
-  
-  .border-selvagem {
-    border-color: hsl(var(--selvagem));
+
+  .option-btn {
+    transition: all 0.2s ease;
   }
-  
-  .border-extremo {
-    border-color: hsl(var(--extremo));
+
+  .option-btn:hover {
+    transform: translateY(-2px);
   }
-  
-  /* Efeitos de vidro e glassmorphism */
-  .glass-card {
-    @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-lg;
+
+  /* Estilo de cards para perguntas e desafios */
+  .card-gradient-border {
+    position: relative;
+    border-radius: 1rem;
+    background-clip: padding-box;
+    overflow: hidden;
   }
-  
-  /* Animações extras */
-  @keyframes pulse-glow {
-    0%, 100% {
-      box-shadow: 0 0 15px 0 rgba(255, 255, 255, 0.4);
+
+  .card-gradient-border::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    bottom: -2px;
+    left: -2px;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(45deg, 
+      hsl(var(--intensity-suave)) 0%, 
+      hsl(var(--intensity-picante)) 25%, 
+      hsl(var(--intensity-selvagem)) 50%, 
+      hsl(var(--intensity-extremo)) 75%, 
+      hsl(var(--intensity-suave)) 100%);
+    animation: border-gradient 6s linear infinite;
+  }
+
+  @keyframes border-gradient {
+    0% {
+      background-position: 0% 50%;
     }
     50% {
-      box-shadow: 0 0 25px 5px rgba(255, 255, 255, 0.7);
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
     }
   }
-  
-  .pulse-animation {
-    animation: pulse-glow 2s infinite;
+
+  /* Glassmorphism style */
+  .glass-card {
+    background: rgba(20, 20, 20, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+      0 8px 32px 0 rgba(0, 0, 0, 0.37),
+      inset 0 0 2px 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
   }
-  
-  /* Estilos para inputs em fundos escuros */
-  .dark-input {
-    @apply bg-white/20 border-white/20 text-white placeholder:text-white/50;
+
+  .glass-card:hover {
+    box-shadow: 
+      0 10px 40px 0 rgba(0, 0, 0, 0.45),
+      inset 0 0 2px 1px rgba(255, 255, 255, 0.07);
+    transform: translateY(-3px);
   }
-  
-  .dark-input:focus {
-    @apply border-white/70 outline-none ring-2 ring-white/30;
+
+  /* Neon text effect */
+  .neon-text {
+    text-shadow: 
+      0 0 5px rgba(255, 255, 255, 0.5),
+      0 0 10px rgba(255, 105, 180, 0.3),
+      0 0 15px rgba(128, 0, 128, 0.2);
+    letter-spacing: 1px;
   }
-  
-  /* Outros efeitos para o jogo */
-  .flip-card {
-    perspective: 1000px;
-    transform-style: preserve-3d;
+
+  /* Animações para Roleta Sensual */
+  .animate-pulse-light {
+    animation: pulse-light 2s infinite;
   }
-  
-  .flip-card-inner {
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
+
+  @keyframes pulse-light {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
   }
-  
-  .flip-card.flipped .flip-card-inner {
-    transform: rotateY(180deg);
+
+  .animate-glow {
+    animation: glow 2s infinite alternate;
   }
-  
-  .flip-card-front, .flip-card-back {
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
+
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 10px -5px rgba(236, 72, 153, 0.8);
+    }
+    to {
+      box-shadow: 0 0 20px 5px rgba(236, 72, 153, 0.8);
+    }
   }
-  
-  .flip-card-back {
-    transform: rotateY(180deg);
+
+  .animate-rotate-slow {
+    animation: rotate-slow 10s linear infinite;
   }
-  
-  /* Animação para confetti */
-  @keyframes confetti {
+
+  @keyframes rotate-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Button with shiny effect */
+  .shiny-button {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shiny-button:after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(45deg);
+    transition: all 0.5s;
+    opacity: 0;
+  }
+
+  .shiny-button:hover:after {
+    opacity: 1;
+    left: 100%;
+    top: 100%;
+    transition: all 0.5s;
+  }
+
+  /* Efeito de Confetti para prêmios */
+  .confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    animation: confetti-fall 5s ease-out forwards;
+    transform-origin: center;
+  }
+
+  @keyframes confetti-fall {
     0% {
-      transform: translateY(0) rotate(0deg);
+      transform: translateY(-50px) rotate(0deg) scale(0);
+      opacity: 1;
+    }
+    25% {
       opacity: 1;
     }
     100% {
-      transform: translateY(100vh) rotate(360deg);
+      transform: translateY(400px) rotate(720deg) scale(1);
       opacity: 0;
     }
   }
-  
-  .animate-confetti {
-    animation: confetti 3s ease-in-out forwards;
+
+  /* Efeito de brilho para barras de progresso */
+  .sheen-effect {
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-20deg);
+    animation: sheen 2s ease-in-out infinite;
   }
-  
-  /* Cores adicionais para intensidades dos cartões */
-  .text-intensity-suave {
-    @apply text-blue-400;
+
+  @keyframes sheen {
+    0%, 100% {
+      transform: skewX(-20deg) translateX(-100%);
+    }
+    50% {
+      transform: skewX(-20deg) translateX(100%);
+    }
   }
-  
-  .text-intensity-picante {
-    @apply text-orange-400;
+
+  /* Animação de pulso suave */
+  @keyframes pulse-light {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
+    }
+    50% {
+      opacity: 0.9;
+      transform: scale(1.05);
+      box-shadow: 0 0 10px 4px rgba(236, 72, 153, 0.4);
+    }
   }
-  
-  .text-intensity-selvagem {
-    @apply text-red-400;
+
+  .animate-pulse-light {
+    animation: pulse-light 2s ease-in-out infinite;
   }
-  
-  .text-intensity-extremo {
-    @apply text-purple-400;
+
+  /* Efeito de card com borda gradiente */
+  .border-gradient {
+    border-image-slice: 1;
+  }
+
+  /* Animações para elementos de memórias */
+  @keyframes memory-glow {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(147, 51, 234, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+    }
+  }
+
+  .memory-item-hover:hover {
+    animation: memory-glow 2s infinite ease-in-out;
+  }
+
+  /* Mobile-specific utilities */
+  .mobile-card {
+    @apply px-2 py-3 sm:px-5 sm:py-6 rounded-lg shadow-lg;
+  }
+
+  .mobile-padding {
+    @apply px-2 sm:px-4 md:px-6;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .mobile-text {
+    @apply text-sm sm:text-base;
+    word-break: break-word;
+  }
+
+  .mobile-heading {
+    @apply text-lg sm:text-xl md:text-2xl;
+  }
+
+  .mobile-title {
+    @apply text-xl sm:text-2xl md:text-4xl;
+  }
+
+  .mobile-flex-col {
+    @apply flex flex-col sm:flex-row;
+  }
+
+  /* Ajustes para touch */
+  button, 
+  [role="button"],
+  .clickable {
+    @apply touch-manipulation;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevenir zoom em inputs */
+  input[type="text"],
+  input[type="number"],
+  select {
+    @apply text-base;
+    font-size: 16px !important;
+  }
+
+  /* Ajustes para botões em dispositivos móveis */
+  @media (max-width: 640px) {
+    .mobile-full {
+      width: 100%;
+      max-width: 100%;
+      margin-bottom: 0.5rem;
+    }
+
+    .mobile-stack > * {
+      margin-right: 0 !important;
+      margin-bottom: 0.75rem;
+    }
+
+    .mobile-stack {
+      flex-direction: column;
+    }
+
+/* Mobile and Touch Optimizations */
+@layer utilities {
+  .touch-safe-height {
+    min-height: 44px;
+  }
+
+  .touch-safe-width {
+    min-width: 44px;
+  }
+
+  .mobile-spacing {
+    @apply p-3 sm:p-4;
+  }
+
+  .mobile-text-base {
+    font-size: 16px !important;
+  }
+
+  .mobile-button {
+    @apply touch-safe-height touch-safe-width 
+           active:scale-95 transition-transform
+           disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .mobile-card {
+    @apply rounded-xl shadow-lg 
+           border border-border/50
+           backdrop-blur-sm;
+  }
+
+  .mobile-grid {
+    @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 
+           gap-2 sm:gap-3 md:gap-4;
+  }
+
+  .mobile-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .mobile-safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  /* Prevent pull-to-refresh on iOS */
+  .prevent-pull-refresh {
+    overscroll-behavior-y: contain;
+    touch-action: pan-x pan-y;
+  }
+
+  /* Better touch feedback */
+  .touch-feedback {
+    @apply active:opacity-70 
+           transition-opacity 
+           duration-200 
+           touch-callout-none
+           select-none;
+  }
+}
+
+
+    .mobile-small-text {
+      font-size: 0.875rem;
+    }
+
+    .mobile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.5rem;
+    }
   }
 }
